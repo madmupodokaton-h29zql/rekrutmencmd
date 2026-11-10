@@ -1,0 +1,2873 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal E-Rekrutmen | KSPPS CMD Podokaton</title>
+
+  <!-- PWA Manifest via Data URI -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"E-Rekrutmen KSPPS CMD Podokaton","short_name":"Rekrutmen CMD","start_url":".","display":"standalone","background_color":"#0B3B2D","theme_color":"#0B3B2D","icons":[{"src":"https://placehold.co/192x192/F59E0B/0B3B2D?text=CMD","sizes":"192x192","type":"image/png"}]}' />
+  <meta name="theme-color" content="#0B3B2D" />
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            cmd: {
+              dark: '#0B3B2D',
+              mid: '#114B3A',
+              light: '#166534',
+              amber: '#F59E0B',
+              amberHover: '#D97706'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Full Page Overlay untuk Blogger tanpa edit XML */
+    #kspps-app-root {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background-color: #F8FAFC;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #0F172A;
+      scroll-behavior: smooth;
+    }
+
+    /* Glassmorphism Utilities */
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+    }
+
+    .glass-dark {
+      background: rgba(17, 75, 58, 0.65);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    /* Hero Gradient Background */
+    .hero-syariah-bg {
+      background: radial-gradient(circle at 85% 20%, rgba(245, 158, 11, 0.15) 0%, transparent 45%),
+                  linear-gradient(135deg, #07291F 0%, #0B3B2D 55%, #124E3C 100%);
+    }
+
+    /* Custom Scrollbar */
+    #kspps-app-root::-webkit-scrollbar {
+      width: 8px;
+    }
+    #kspps-app-root::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    #kspps-app-root::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+    #kspps-app-root::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+
+    /* Transparent Logo Filter & Canvas Container */
+    .cmd-logo-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .cmd-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.18));
+    }
+
+    /* Modern Scroll Reveal Animations */
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(28px) scale(0.985);
+      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    .scroll-reveal.reveal-left {
+      transform: translateX(-32px);
+    }
+    .scroll-reveal.reveal-right {
+      transform: translateX(32px);
+    }
+    .scroll-reveal.is-visible {
+      opacity: 1;
+      transform: translate(0, 0) scale(1);
+    }
+    .delay-100 { transition-delay: 100ms; }
+    .delay-200 { transition-delay: 200ms; }
+    .delay-300 { transition-delay: 300ms; }
+    .delay-400 { transition-delay: 400ms; }
+
+    /* Responsive Navigation Layout Rules */
+    @media (min-width: 1024px) {
+      .desktop-sidebar {
+        display: flex !important;
+      }
+      .mobile-bottom-nav {
+        display: none !important;
+      }
+      .dashboard-main-content {
+        margin-left: 17rem;
+      }
+    }
+    @media (max-width: 1023px) {
+      .desktop-sidebar {
+        display: none !important;
+      }
+      .mobile-bottom-nav {
+        display: flex !important;
+      }
+      .dashboard-main-content {
+        margin-left: 0;
+        padding-bottom: 5.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="kspps-app-root">
+  <!-- BANNER MODE PREVIEW (Hanya tampil saat IS_PREVIEW = true) -->
+  <div id="preview-banner" class="hidden bg-amber-500 text-slate-950 px-4 py-2 text-xs font-semibold shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-slate-950 text-amber-400">
+          MODE PREVIEW AKTIF
+        </span>
+        <span>Data berjalan di memori lokal browser. Ubah <code class="bg-amber-600/30 px-1 rounded">IS_PREVIEW = false</code> saat deploy ke produksi.</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="window.app.quickLoginPelamar()" class="px-2.5 py-1 rounded-lg bg-white/90 hover:bg-white text-slate-900 font-bold transition shadow-sm">
+          Pintasan Login Pelamar
+        </button>
+        <button onclick="window.app.quickLoginAdmin()" class="px-2.5 py-1 rounded-lg bg-emerald-950 hover:bg-emerald-900 text-white font-bold transition shadow-sm">
+          Pintasan Login Admin HRD
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="fixed top-14 right-4 z-[100] flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+  <!-- ========================================== -->
+  <!-- VIEW 1: PUBLIC LANDING PAGE (SESUAI GAMBAR) -->
+  <!-- ========================================== -->
+  <div id="view-landing" class="min-h-screen flex flex-col">
+    <!-- Top Navbar -->
+    <header class="bg-[#0B3B2D] border-b border-white/10 sticky top-0 z-40">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <!-- Brand Logo -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="window.app.scrollToTop()">
+          <div class="w-10 h-10 rounded-xl bg-white/10 p-1 cmd-logo-box border border-white/15">
+            <img data-cmd-logo alt="Logo KSPPS CMD Podokaton" class="cmd-logo-img" />
+          </div>
+          <div>
+            <div class="text-white font-extrabold text-sm tracking-wide leading-none">KSPPS CMD PODOKATON</div>
+            <div class="text-emerald-200/70 text-[10px] font-medium tracking-wider uppercase mt-0.5">Rekrutmen Karyawan</div>
+          </div>
+        </div>
+
+        <!-- Right Auth Buttons -->
+        <div id="nav-guest-actions" class="flex items-center gap-2 sm:gap-3">
+          <button onclick="window.app.openAuthModal('login')" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-white hover:bg-white/10 transition">
+            Masuk
+          </button>
+          <button onclick="window.app.openAuthModal('register')" class="px-4 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 transition shadow-sm">
+            Daftar
+          </button>
+        </div>
+
+        <!-- Jika sudah login, tampilkan tombol kembali ke Dashboard -->
+        <div id="nav-logged-actions" class="hidden items-center gap-2">
+          <button onclick="window.app.enterDashboard()" class="px-4 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 transition flex items-center gap-1.5">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+            <span>Buka Dashboard</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero-syariah-bg text-white py-12 sm:py-16 lg:py-20 px-4 sm:px-6 relative overflow-hidden">
+      <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+        <!-- Left Column (7 Cols) -->
+        <div class="lg:col-span-7 space-y-6 scroll-reveal reveal-left">
+          <!-- Pill Badges -->
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/80 border border-emerald-400/30 text-xs font-semibold text-emerald-200">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>Rekrutmen sedang dibuka</span>
+            </div>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-emerald-100/80">
+              <i data-lucide="mosque" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>Melayani umat & ekonomi syariah</span>
+            </div>
+          </div>
+
+          <!-- Main Heading -->
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.15]">
+            Tumbuh dan berkarya bersama <span class="text-amber-400">KSPPS CMD PODOKATON</span>
+          </h1>
+
+          <!-- Subtitle Description -->
+          <p class="text-emerald-100/85 text-sm sm:text-base leading-relaxed max-w-2xl">
+            Koperasi Simpan Pinjam & Pembiayaan Syariah Cendekia Maju Mandiri (CMD) Podokaton — tumbuh dari nilai-nilai kepesantrenan untuk membangun kemandirian ekonomi umat. Mari tumbuh bersama kami.
+          </p>
+
+          <!-- CTA Buttons -->
+          <div class="flex flex-wrap items-center gap-3 pt-1">
+            <button onclick="window.app.openAuthModal('register')" class="px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm transition flex items-center gap-2 shadow-lg shadow-amber-500/20">
+              <span>Buat Akun Gratis</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+            <a href="#section-lowongan" class="px-5 py-3 rounded-xl bg-white/5 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm transition">
+              Lihat Lowongan
+            </a>
+          </div>
+
+          <!-- 3 Mini Feature Highlights -->
+          <div class="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-xs text-emerald-100/90 font-medium">
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-amber-400"></i>
+              <span>Tanpa biaya apapun</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="smartphone" class="w-4 h-4 text-amber-400"></i>
+              <span>Cukup dari HP</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="bell-ring" class="w-4 h-4 text-amber-400"></i>
+              <span>Pantau status real-time</span>
+            </div>
+          </div>
+
+          <!-- Visi Quote Box -->
+          <div class="border-l-2 border-amber-400 pl-4 py-1 mt-4">
+            <p class="text-xs sm:text-sm italic text-emerald-100/80 leading-relaxed">
+              "Menjadi Lembaga Keuangan Syariah yang Terpercaya, Profesional, dan Mandiri dalam Membangun Kesejahteraan Umat Berbasis Nilai-Nilai Pesantren."
+            </p>
+            <p class="text-[11px] font-bold tracking-wider uppercase text-amber-400 mt-1">
+              VISI KSPPS CMD PODOKATON
+            </p>
+          </div>
+        </div>
+
+        <!-- Right Column: Floating Open Job Counter Card (5 Cols) -->
+        <div class="lg:col-span-5 scroll-reveal reveal-right delay-200">
+          <div class="bg-white text-slate-900 rounded-2xl p-6 shadow-2xl border border-slate-100 max-w-md mx-auto lg:ml-auto">
+            <div class="flex items-start justify-between">
+              <div>
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">LOWONGAN DIBUKA</div>
+                <div class="flex items-baseline gap-2 mt-1">
+                  <span id="hero-job-count" class="text-4xl font-extrabold text-slate-900">1</span>
+                  <span class="text-sm font-medium text-slate-500">posisi</span>
+                </div>
+              </div>
+              <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                <i data-lucide="briefcase" class="w-5 h-5"></i>
+              </div>
+            </div>
+
+            <hr class="my-4 border-slate-100" />
+
+            <!-- Featured Job Preview inside Hero Card -->
+            <div id="hero-job-preview" class="space-y-3">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: 4 LANGKAH ONLINE -->
+    <section class="py-14 sm:py-16 px-4 sm:px-6 bg-[#F8FAFC] border-b border-slate-200/70">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center max-w-xl mx-auto mb-10 scroll-reveal">
+          <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">PROSES LAMARAN</div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Empat langkah, semuanya online</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <!-- Step 1 -->
+          <div class="scroll-reveal delay-100 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-10 h-10 rounded-xl bg-[#0B3B2D] text-amber-400 flex items-center justify-center">
+                <i data-lucide="mail-check" class="w-5 h-5"></i>
+              </div>
+              <span class="text-4xl font-extrabold text-slate-100 select-none">1</span>
+            </div>
+            <h3 class="font-bold text-slate-900 text-base mb-1.5">Daftar akun</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Buat akun dengan email aktif dan kata sandi untuk mulai mengakses portal pelamar KSPPS CMD Podokaton.
+            </p>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="scroll-reveal delay-200 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-10 h-10 rounded-xl bg-[#0B3B2D] text-amber-400 flex items-center justify-center">
+                <i data-lucide="user-check" class="w-5 h-5"></i>
+              </div>
+              <span class="text-4xl font-extrabold text-slate-100 select-none">2</span>
+            </div>
+            <h3 class="font-bold text-slate-900 text-base mb-1.5">Isi biodata</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Lengkapi data diri sesuai KTP, riwayat pendidikan formal, riwayat pesantren, dan pengalaman kerja.
+            </p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="scroll-reveal delay-300 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-10 h-10 rounded-xl bg-[#0B3B2D] text-amber-400 flex items-center justify-center">
+                <i data-lucide="file-up" class="w-5 h-5"></i>
+              </div>
+              <span class="text-4xl font-extrabold text-slate-100 select-none">3</span>
+            </div>
+            <h3 class="font-bold text-slate-900 text-base mb-1.5">Unggah berkas</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Foto atau scan dokumen langsung dari HP. Sistem mengoptimalkan ukuran foto secara otomatis.
+            </p>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="scroll-reveal delay-400 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-10 h-10 rounded-xl bg-[#0B3B2D] text-amber-400 flex items-center justify-center">
+                <i data-lucide="send" class="w-5 h-5"></i>
+              </div>
+              <span class="text-4xl font-extrabold text-slate-100 select-none">4</span>
+            </div>
+            <h3 class="font-bold text-slate-900 text-base mb-1.5">Kirim & pantau</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Pilih posisi lowongan, syarat dicek otomatis. Hasil seleksi dikabarkan langsung lewat dashboard akun.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: LOWONGAN POSISI YANG TERSEDIA & TIPS -->
+    <section id="section-lowongan" class="py-14 sm:py-16 px-4 sm:px-6 bg-white border-b border-slate-200/70">
+      <div class="max-w-6xl mx-auto">
+        <div class="flex flex-wrap items-end justify-between gap-4 mb-8 scroll-reveal">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">LOWONGAN</div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Posisi yang tersedia</h2>
+          </div>
+          <div id="landing-job-count-label" class="text-xs font-medium text-slate-400">
+            1 posisi ditampilkan
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <!-- Daftar Kartu Lowongan (7 Cols) -->
+          <div id="landing-job-list" class="lg:col-span-7 space-y-4 scroll-reveal reveal-left">
+            <!-- Diisi otomatis oleh JavaScript -->
+          </div>
+
+          <!-- Kartu Tips Sebelum Melamar (5 Cols) -->
+          <div class="lg:col-span-5 bg-[#0B3B2D] text-white rounded-2xl p-6 sm:p-7 shadow-lg scroll-reveal reveal-right delay-200">
+            <div class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-4">
+              TIPS SEBELUM MELAMAR
+            </div>
+            <ul class="space-y-3.5 text-xs sm:text-sm text-emerald-50/90 leading-relaxed">
+              <li class="flex items-start gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+                <span>Isi biodata persis sesuai KTP. NIK 16 digit dicek kesesuaiannya terhadap tanggal lahir dan jenis kelamin.</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+                <span>Gunakan nomor WhatsApp dan email yang aktif, karena kabar panggilan tes/wawancara dikirim lewat akun & kontak aktif.</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+                <span>Pastikan foto KTP, Ijazah, dan dokumen pendukung terlihat terang, jelas, dan tidak terpotong.</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+                <span>Cantumkan pengalaman organisasi atau riwayat pendidikan Pondok Pesantren jika ada sebagai nilai tambah.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: BERKAS YANG PERLU DISIAPKAN & FAQ -->
+    <section class="py-14 sm:py-16 px-4 sm:px-6 bg-[#F8FAFC]">
+      <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Left: Berkas yang perlu disiapkan (6 Cols) -->
+        <div class="lg:col-span-6 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm scroll-reveal reveal-left">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+              <i data-lucide="file-text" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Berkas yang perlu disiapkan</h3>
+          </div>
+
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">WAJIB</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm text-slate-700 font-medium mb-6">
+            <div class="flex items-center gap-2">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+              <span>Surat Lamaran Kerja</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+              <span>Daftar Riwayat Hidup (CV)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+              <span>Foto/Scan KTP</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+              <span>Scan Ijazah Terakhir</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+              <span>Scan Kartu Keluarga</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+              <span>Pas Foto 4x6</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+              <span>SKCK Aktif</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+              <span>Surat Keterangan Sehat</span>
+            </div>
+          </div>
+
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">JIKA ADA</div>
+          <div class="space-y-2 text-xs sm:text-sm text-slate-600 mb-6">
+            <div class="flex items-center gap-2">
+              <i data-lucide="circle-dot" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+              <span>Foto SIM C</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="circle-dot" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+              <span>Syahadah / Surat Keterangan / Ijazah Pesantren</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="circle-dot" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+              <span>Sertifikat Pengalaman / Keahlian</span>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 text-xs text-slate-500 leading-relaxed">
+            Format JPG, PNG, atau PDF/Tautan. Foto dari kamera HP otomatis dikompresi agar hemat kuota — pastikan tulisan terbaca jelas.
+          </div>
+        </div>
+
+        <!-- Right: Pertanyaan yang sering diajukan (6 Cols) -->
+        <div class="lg:col-span-6 scroll-reveal reveal-right delay-200">
+          <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 mb-5">Pertanyaan yang sering diajukan</h3>
+          <div id="landing-faq-list" class="space-y-3">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- AMBER CTA BANNER -->
+      <div class="max-w-6xl mx-auto mt-14 scroll-reveal">
+        <div class="bg-amber-500 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 shadow-lg shadow-amber-500/15">
+          <div>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-950">Siap bergabung bersama kami?</h3>
+            <p class="text-xs sm:text-sm text-slate-900/80 font-medium mt-1">
+              Buat akun sekarang. Hanya butuh email aktif dan beberapa menit.
+            </p>
+          </div>
+          <div class="flex items-center gap-3 shrink-0">
+            <button onclick="window.app.openAuthModal('register')" class="px-5 py-2.5 rounded-xl bg-[#0B3B2D] hover:bg-emerald-950 text-white font-bold text-xs sm:text-sm transition flex items-center gap-2 shadow-sm">
+              <span>Buat Akun</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+            <button onclick="window.app.openAuthModal('login')" class="px-5 py-2.5 rounded-xl bg-amber-400/50 hover:bg-amber-400 border border-slate-950/15 text-slate-950 font-bold text-xs sm:text-sm transition">
+              Masuk
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#0B3B2D] text-white pt-12 pb-8 px-4 sm:px-6 mt-auto border-t border-white/10">
+      <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 pb-10 border-b border-white/10">
+        <!-- Col 1: Brand & Free Warning (5 Cols) -->
+        <div class="md:col-span-5 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-white/10 p-1 cmd-logo-box border border-white/15">
+              <img data-cmd-logo alt="Logo KSPPS CMD Podokaton" class="cmd-logo-img" />
+            </div>
+            <div>
+              <div class="font-extrabold text-sm tracking-wide">KSPPS CMD PODOKATON</div>
+              <div class="text-xs text-emerald-200/75">Koperasi Simpan Pinjam & Pembiayaan Syariah</div>
+            </div>
+          </div>
+          <p class="text-xs text-emerald-100/75 leading-relaxed">
+            Portal resmi e-rekrutmen karyawan KSPPS CMD Podokaton. Pendaftaran, unggah berkas, dan pemantauan status lamaran dilakukan sepenuhnya secara online.
+          </p>
+          <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2.5">
+            <i data-lucide="shield-check" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+            <p class="text-[11px] text-emerald-100/90 leading-relaxed">
+              <strong class="text-white">Bebas biaya.</strong> Seluruh proses rekrutmen tidak dipungut biaya apapun. Waspadai penipuan yang mengatasnamakan KSPPS CMD Podokaton.
+            </p>
+          </div>
+        </div>
+
+        <!-- Col 2: Links Pelamar (3 Cols) -->
+        <div class="md:col-span-3 space-y-3">
+          <div class="text-xs font-bold uppercase tracking-wider text-amber-400">PELAMAR</div>
+          <ul class="space-y-2 text-xs text-emerald-100/80">
+            <li><a href="#section-lowongan" class="hover:text-white transition">Lowongan tersedia</a></li>
+            <li><button onclick="window.app.openAuthModal('register')" class="hover:text-white transition">Buat akun pelamar</button></li>
+            <li><button onclick="window.app.openAuthModal('login')" class="hover:text-white transition">Masuk akun</button></li>
+            <li><button onclick="window.app.openAuthModal('admin')" class="hover:text-amber-300 transition">Portal HRD / Admin</button></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Kantor Pusat (4 Cols) -->
+        <div class="md:col-span-4 space-y-3">
+          <div class="text-xs font-bold uppercase tracking-wider text-amber-400">KANTOR PUSAT</div>
+          <ul class="space-y-2.5 text-xs text-emerald-100/80">
+            <li class="flex items-start gap-2">
+              <i data-lucide="map-pin" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+              <span>Podokaton, Jawa Timur — Indonesia</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <i data-lucide="globe" class="w-4 h-4 text-amber-400 shrink-0"></i>
+              <span>rekrutmen.ksppscmdpodokaton.id</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <i data-lucide="Clock" class="w-4 h-4 text-amber-400 shrink-0"></i>
+              <span>Jam Operasional: Sabtu - Kamis (08.00 - 15.30 WIB)</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="max-w-6xl mx-auto pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-emerald-200/60 gap-2">
+        <div>&copy; <span id="footer-year">2026</span> KSPPS CMD Podokaton. Hak Cipta Dilindungi.</div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span>Sistem E-Rekrutmen Terpadu Berbasis Nilai Pesantren</span>
+          <span class="hidden sm:inline">&bull;</span>
+          <span class="text-amber-400 font-semibold tracking-wide">powered by Hizqil Roy NH</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- VIEW 2: DASHBOARD AREA (PELAMAR & ADMIN)   -->
+  <!-- ========================================== -->
+  <div id="view-dashboard" class="hidden min-h-screen bg-[#F8FAFC]">
+    <!-- DESKTOP FIXED SIDEBAR -->
+    <aside class="desktop-sidebar fixed top-0 left-0 bottom-0 w-68 bg-[#0B3B2D] text-white flex-col justify-between z-40 shadow-xl">
+      <div>
+        <!-- Brand Header -->
+        <div class="p-5 border-b border-white/10 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-white/10 p-1 cmd-logo-box border border-white/15">
+              <img data-cmd-logo alt="Logo KSPPS CMD Podokaton" class="cmd-logo-img" />
+            </div>
+            <div>
+              <div class="font-extrabold text-xs tracking-wide">KSPPS CMD PODOKATON</div>
+              <div id="sidebar-role-badge" class="text-[10px] text-amber-400 font-semibold uppercase">Portal Pelamar</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Mini Card -->
+        <div class="p-4 mx-3 mt-4 rounded-xl bg-white/5 border border-white/10">
+          <div class="text-xs font-bold text-white truncate" id="sidebar-user-name">Nama Pengguna</div>
+          <div class="text-[11px] text-emerald-200/75 truncate mt-0.5" id="sidebar-user-email">email@domain.com</div>
+        </div>
+
+        <!-- Navigation Menu List -->
+        <nav id="sidebar-nav-items" class="p-3 space-y-1 mt-2">
+          <!-- Populated dynamically based on role (Pelamar / Admin) -->
+        </nav>
+      </div>
+
+      <!-- Bottom Sidebar Actions -->
+      <div class="p-4 border-t border-white/10 space-y-2">
+        <button onclick="window.app.showLandingPage()" class="w-full px-3.5 py-2 rounded-xl text-xs font-semibold text-emerald-100 hover:bg-white/10 transition flex items-center gap-2">
+          <i data-lucide="globe" class="w-4 h-4"></i>
+          <span>Lihat Halaman Depan</span>
+        </button>
+        <button onclick="window.app.logout()" class="w-full px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-400/20 transition flex items-center gap-2">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+          <span>Keluar Akun</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <div class="dashboard-main-content min-h-screen flex flex-col">
+      <!-- Top Bar Mobile & Desktop -->
+      <header class="glass-panel sticky top-0 z-30 px-4 sm:px-8 h-16 flex items-center justify-between">
+        <div>
+          <h1 id="dashboard-page-title" class="text-base sm:text-lg font-extrabold text-slate-900">Beranda</h1>
+          <p id="dashboard-page-subtitle" class="text-[11px] text-slate-500 hidden sm:block">Pantau tahapan rekrutmen dan kelengkapan berkas Anda</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="window.app.showLandingPage()" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+            <i data-lucide="home" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">Beranda Publik</span>
+          </button>
+          <button onclick="window.app.logout()" class="lg:hidden px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold flex items-center gap-1">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            <span>Keluar</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic Tab Content -->
+      <main id="dashboard-content-area" class="p-4 sm:p-8 max-w-6xl w-full mx-auto flex-1">
+        <!-- Rendered by JS -->
+      </main>
+    </div>
+
+    <!-- MOBILE FLOATING BOTTOM NAVIGATION BAR -->
+    <nav id="mobile-bottom-nav" class="mobile-bottom-nav fixed bottom-3 left-3 right-3 bg-[#0B3B2D]/95 backdrop-blur-md text-white rounded-2xl p-1.5 shadow-2xl border border-white/15 z-40 justify-around items-center">
+      <!-- Populated dynamically based on role -->
+    </nav>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL AUTENTIKASI (HYBRID LOGIN & DAFTAR)  -->
+  <!-- ========================================== -->
+  <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-100 relative animate-fadeIn">
+      <button onclick="window.app.closeAuthModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+
+      <!-- Brand Header inside Modal -->
+      <div class="flex items-center gap-2.5 mb-5">
+        <div class="w-9 h-9 rounded-xl bg-emerald-950/5 p-1 cmd-logo-box border border-slate-200">
+          <img data-cmd-logo alt="Logo KSPPS CMD Podokaton" class="cmd-logo-img" />
+        </div>
+        <div>
+          <div class="text-xs font-extrabold text-slate-900">KSPPS CMD PODOKATON</div>
+          <div class="text-[10px] text-slate-400">Sistem E-Rekrutmen Online</div>
+        </div>
+      </div>
+
+      <!-- Mode Switch Tabs -->
+      <div class="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl mb-5 text-xs font-bold">
+        <button id="tab-btn-login" onclick="window.app.switchAuthTab('login')" class="py-2 rounded-lg transition">
+          Masuk Pelamar
+        </button>
+        <button id="tab-btn-register" onclick="window.app.switchAuthTab('register')" class="py-2 rounded-lg transition">
+          Daftar Akun
+        </button>
+        <button id="tab-btn-admin" onclick="window.app.switchAuthTab('admin')" class="py-2 rounded-lg transition">
+          Admin HRD
+        </button>
+      </div>
+
+      <!-- FORM 1: LOGIN PELAMAR (Validasi Tabel Database) -->
+      <form id="form-login-pelamar" onsubmit="window.app.handleLoginPelamar(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Email atau NIK Pelamar</label>
+          <input type="text" id="login-pelamar-identifier" required placeholder="Masukkan email atau 16 digit NIK" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-emerald-700" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Kata Sandi</label>
+          <input type="password" id="login-pelamar-password" required placeholder="Masukkan kata sandi" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-emerald-700" />
+        </div>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-[#0B3B2D] hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm transition shadow-md">
+          Masuk sebagai Pelamar
+        </button>
+      </form>
+
+      <!-- FORM 2: DAFTAR AKUN PELAMAR BARU -->
+      <form id="form-register-pelamar" onsubmit="window.app.handleRegisterPelamar(event)" class="hidden space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap (Sesuai KTP)</label>
+          <input type="text" id="reg-nama" required placeholder="Contoh: Ahmad Fauzi" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-emerald-700" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">NIK KTP (16 Digit)</label>
+            <input type="text" id="reg-nik" required maxlength="16" minlength="16" pattern="\d{16}" placeholder="3514xxxxxxxxxxxx" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-emerald-700" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Nomor WhatsApp</label>
+            <input type="text" id="reg-wa" required placeholder="0812xxxxxxxx" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-emerald-700" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Alamat Email Aktif</label>
+          <input type="email" id="reg-email" required placeholder="nama@email.com" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-emerald-700" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Buat Kata Sandi</label>
+          <input type="password" id="reg-password" required minlength="6" placeholder="Minimal 6 karakter" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-emerald-700" />
+        </div>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs sm:text-sm transition shadow-md">
+          Buat Akun Pelamar Sekarang
+        </button>
+      </form>
+
+      <!-- FORM 3: LOGIN ADMIN HRD (Via Supabase Auth) -->
+      <form id="form-login-admin" onsubmit="window.app.handleLoginAdmin(event)" class="hidden space-y-4">
+        <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900">
+          Login khusus HRD / Pengurus KSPPS CMD Podokaton menggunakan kredensial <strong>Supabase Authentication</strong>.
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Email Admin HRD</label>
+          <input type="email" id="login-admin-email" required placeholder="hrd@ksppscmdpodokaton.id" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-emerald-700" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+          <input type="password" id="login-admin-password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-emerald-700" />
+        </div>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-[#0B3B2D] hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm transition shadow-md">
+          Masuk Dashboard HRD
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL DETAIL PELAMAR (KHUSUS ADMIN VERIFIKASI) -->
+  <div id="admin-applicant-modal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-slate-100 relative">
+      <button onclick="window.app.closeApplicantModal()" class="sticky top-0 float-right w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 z-10">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+      <div id="admin-applicant-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- MODAL VIEWER DOKUMEN / FILE PELAMAR (PDF & GAMBAR) -->
+  <div id="file-viewer-modal" class="hidden fixed inset-0 z-[60] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+      <!-- Header Viewer -->
+      <div class="px-5 py-3.5 bg-[#0B3B2D] text-white flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <h4 id="file-viewer-title" class="text-xs sm:text-sm font-extrabold truncate">Pratinjau Dokumen Pelamar</h4>
+          <p id="file-viewer-subtitle" class="text-[11px] text-emerald-200/80 truncate">Berkas Lamaran KSPPS CMD Podokaton</p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <a id="file-viewer-download" href="#" target="_blank" rel="noopener noreferrer" download class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold transition flex items-center gap-1.5">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            <span>Buka / Unduh</span>
+          </a>
+          <button onclick="window.app.closeFileViewer()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+      <!-- Body Viewer -->
+      <div id="file-viewer-body" class="p-4 sm:p-6 bg-slate-100 flex-1 overflow-y-auto flex items-center justify-center min-h-[360px]">
+        <!-- Diisi dinamis oleh JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPT UTAMA (ES MODULE + SUPABASE) -->
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  // ============================================================================
+  // KONFIGURASI APLIKASI (SAKLAR DEPLOYMENT)
+  // ============================================================================
+  const IS_PREVIEW = true; // Ubah menjadi false SAAT DEPLOY agar mode preview & data dummy hilang dan terhubung 100% ke Supabase
+  const SUPABASE_URL = "URL_SUPABASE_ANDA";
+  const SUPABASE_ANON_KEY = "ANON_KEY_ANDA";
+
+  let supabase = null;
+  if (!IS_PREVIEW) {
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+
+  // ============================================================================
+  // KONFIGURASI LOGO GOOGLE DRIVE & AUTO TRANSPARENT BACKGROUND
+  // ============================================================================
+  const GDRIVE_LOGO_ID = "1dtKGY-2GmyQ5blODEdJR8Wh4J_n736YD";
+  const LOGO_URLS = [
+    `https://drive.google.com/thumbnail?id=${GDRIVE_LOGO_ID}&sz=w500`,
+    `https://lh3.googleusercontent.com/d/${GDRIVE_LOGO_ID}`,
+    `https://drive.google.com/uc?export=view&id=${GDRIVE_LOGO_ID}`
+  ];
+
+  // Fungsi memproses gambar logo agar background putih/terang di sekitarnya menjadi transparan
+  function initTransparentLogo() {
+    const imgElements = document.querySelectorAll('img[data-cmd-logo]');
+    const probe = new Image();
+    probe.crossOrigin = "Anonymous";
+
+    let currentTry = 0;
+
+    function applyLogoToElements(srcUrl) {
+      imgElements.forEach(el => {
+        el.src = srcUrl;
+      });
+    }
+
+    probe.onload = function () {
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = probe.naturalWidth || 200;
+        canvas.height = probe.naturalHeight || 200;
+        ctx.drawImage(probe, 0, 0);
+
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const d = imgData.data;
+
+        // Hapus piksel latar belakang putih / abu-abu sangat terang di sekitar logo
+        for (let i = 0; i < d.length; i += 4) {
+          const r = d[i], g = d[i + 1], b = d[i + 2];
+          if (r > 235 && g > 235 && b > 235) {
+            d[i + 3] = 0; // Set alpha = 0 (transparan penuh)
+          } else if (r > 215 && g > 215 && b > 215 && Math.abs(r - g) < 12 && Math.abs(g - b) < 12) {
+            // Haluskan tepi (anti-aliasing feathering)
+            d[i + 3] = Math.round(((245 - r) / 30) * 255);
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
+        applyLogoToElements(canvas.toDataURL('image/png'));
+      } catch (e) {
+        // Jika kebijakan CORS dari Google Drive membatasi akses piksel canvas,
+        // tampilkan URL gambar Google Drive langsung
+        applyLogoToElements(probe.src);
+      }
+    };
+
+    probe.onerror = function () {
+      currentTry++;
+      if (currentTry < LOGO_URLS.length) {
+        if (currentTry === 1) probe.removeAttribute('crossOrigin');
+        probe.src = LOGO_URLS[currentTry];
+      } else {
+        // Fallback SVG transparan jika tidak ada koneksi internet ke Google Drive
+        const fallbackSvg = `data:image/svg+xml;utf8,` + encodeURIComponent(`
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+            <circle cx="60" cy="60" r="54" fill="#F59E0B" fill-opacity="0.18" stroke="#F59E0B" stroke-width="5"/>
+            <path d="M60 18L92 36V84L60 102L28 84V36L60 18Z" fill="#0B3B2D" stroke="#F59E0B" stroke-width="4"/>
+            <text x="60" y="68" text-anchor="middle" fill="#F59E0B" font-family="sans-serif" font-weight="900" font-size="28">CMD</text>
+          </svg>
+        `);
+        applyLogoToElements(fallbackSvg);
+      }
+    };
+
+    probe.src = LOGO_URLS[0];
+  }
+
+  // ============================================================================
+  // HELPER MEMBUAT DOKUMEN CONTOH (UNTUK MODE PREVIEW AGAR HRD BISA KLIK & LIHAT)
+  // ============================================================================
+  function createSampleDocumentDataUri(title, subtitle, docNumber) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="700" height="480" viewBox="0 0 700 480">
+      <rect width="700" height="480" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="4"/>
+      <rect x="0" y="0" width="700" height="85" rx="16" fill="#0B3B2D"/>
+      <text x="35" y="42" fill="#F59E0B" font-family="sans-serif" font-size="20" font-weight="bold">DOKUMEN LAMARAN — KSPPS CMD PODOKATON</text>
+      <text x="35" y="66" fill="#D1FAE5" font-family="sans-serif" font-size="13">${title}</text>
+      <rect x="35" y="115" width="630" height="310" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/>
+      <text x="60" y="160" fill="#0F172A" font-family="sans-serif" font-size="22" font-weight="bold">${title}</text>
+      <text x="60" y="195" fill="#334155" font-family="sans-serif" font-size="15">Nama Pelamar : Ahmad Zaini Miftah</text>
+      <text x="60" y="225" fill="#334155" font-family="sans-serif" font-size="15">NIK KTP : 3514011205010001</text>
+      <text x="60" y="255" fill="#334155" font-family="sans-serif" font-size="15">Keterangan : ${subtitle}</text>
+      <text x="60" y="285" fill="#0F766E" font-family="sans-serif" font-size="14" font-weight="bold">Nomor Referensi Berkas : ${docNumber}</text>
+      <rect x="60" y="325" width="210" height="42" rx="8" fill="#DCFCE7"/>
+      <text x="80" y="351" fill="#166534" font-family="sans-serif" font-size="13" font-weight="bold">TERVERIFIKASI SISTEM</text>
+    </svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  }
+
+  // ============================================================================
+  // REGISTRASI SERVICE WORKER PWA DINAMIS (1 FILE)
+  // ============================================================================
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+      self.addEventListener('install', (e) => self.skipWaiting());
+      self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+      self.addEventListener('fetch', () => {});
+    `;
+    const blob = new Blob([swCode], { type: 'application/javascript' });
+    const swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl).catch(() => {});
+  }
+
+  // ============================================================================
+  // STATE APLIKASI & DATA DUMMY MINIMALIS (MAKSIMAL 1-2 BARIS SAAT PREVIEW)
+  // ============================================================================
+  const state = {
+    currentUser: null, // { role: 'pelamar' | 'admin', data: {...} }
+    activeTab: 'overview',
+    lowonganList: [],
+    pelamarList: [],
+    lamaranList: [],
+    faqList: []
+  };
+
+  const DUMMY_PREVIEW_DATA = {
+    lowongan: [
+      {
+        id: 'low-1',
+        judul_posisi: 'Marketing Simpanan, Funding Officer',
+        cabang: 'Kantor Cabang Podokaton',
+        jenis_kelamin: 'Laki-laki / Perempuan',
+        usia_maksimal: 27,
+        pendidikan_minimal: 'Min. SMA/SMK/MA',
+        wajib_sim_c: true,
+        syarat_tambahan: 'Jujur, komunikatif, memahami akad syariah dasar, dan memiliki kendaraan bermotor.',
+        deskripsi: 'Bertugas menghimpun dana simpanan anggota serta menjalin silaturahmi kemitraan usaha mikro syariah di wilayah kerja KSPPS CMD Podokaton.',
+        status: 'Dibuka',
+        sisa_hari: 'Sisa 10 hari'
+      }
+    ],
+    pelamar: [
+      {
+        id: 'pel-1',
+        email: 'santri@contoh.com',
+        password: 'password123',
+        nama_lengkap: 'Ahmad Zaini Miftah',
+        nik: '3514011205010001',
+        tempat_lahir: 'Pasuruan',
+        tanggal_lahir: '2001-05-12',
+        jenis_kelamin: 'Laki-laki',
+        no_whatsapp: '081234567890',
+        alamat_ktp: 'Jl. Pondok Pesantren Podokaton RT 02 RW 01',
+        pendidikan_terakhir: 'SMA/SMK/MA',
+        nama_institusi: 'MA Darullughah / SMK Syariah',
+        riwayat_pesantren: 'Pondok Pesantren Podokaton (2016 - 2020)',
+        pengalaman_kerja: 'Staf Administrasi Koperasi Santri (1 Tahun)',
+        berkas_json: {
+          surat_lamaran: {
+            name: 'Surat_Lamaran_Ahmad_Zaini.png',
+            type: 'image/svg+xml',
+            sizeKB: 125,
+            url: createSampleDocumentDataUri('SURAT LAMARAN KERJA', 'Lamaran Posisi Marketing Simpanan & Funding Officer', 'DOC-SL-001')
+          },
+          cv: {
+            name: 'CV_Ahmad_Zaini_Miftah.png',
+            type: 'image/svg+xml',
+            sizeKB: 180,
+            url: createSampleDocumentDataUri('DAFTAR RIWAYAT HIDUP (CV)', 'Pendidikan MA & Pengalaman Koperasi Santri 1 Tahun', 'DOC-CV-002')
+          },
+          ktp: {
+            name: 'Scan_KTP_3514011205010001.png',
+            type: 'image/svg+xml',
+            sizeKB: 95,
+            url: createSampleDocumentDataUri('KARTU TANDA PENDUDUK (KTP)', 'Tempat/Tgl Lahir: Pasuruan, 12-05-2001 | Alamat: Podokaton', 'NIK-3514011205010001')
+          },
+          ijazah: {
+            name: 'Ijazah_Terakhir_MA.png',
+            type: 'image/svg+xml',
+            sizeKB: 210,
+            url: createSampleDocumentDataUri('IJAZAH PENDIDIKAN TERAKHIR', 'Lulusan MA Darullughah / SMK Syariah', 'IJZ-2020-8891')
+          },
+          kk: {
+            name: 'Kartu_Keluarga_Ahmad.png',
+            type: 'image/svg+xml',
+            sizeKB: 160,
+            url: createSampleDocumentDataUri('KARTU KELUARGA (KK)', 'Dokumen Kependudukan Resmi Terlampir', 'KK-351401-009')
+          },
+          pas_foto: {
+            name: 'Pas_Foto_4x6_Resmi.png',
+            type: 'image/svg+xml',
+            sizeKB: 85,
+            url: createSampleDocumentDataUri('PAS FOTO FORMAL 4x6', 'Pas Foto Berwarna Latar Belakang Resmi', 'FOTO-4X6-01')
+          },
+          skck: {
+            name: 'SKCK_Polres_Aktif.png',
+            type: 'image/svg+xml',
+            sizeKB: 140,
+            url: createSampleDocumentDataUri('SURAT KETERANGAN CATATAN KEPOLISIAN', 'Status: Aktif & Berkelakuan Baik', 'SKCK-2026-112')
+          },
+          surat_sehat: {
+            name: 'Surat_Keterangan_Sehat.png',
+            type: 'image/svg+xml',
+            sizeKB: 110,
+            url: createSampleDocumentDataUri('SURAT KETERANGAN SEHAT', 'Puskesmas Podokaton — Sehat Jasmani', 'SKS-2026-044')
+          },
+          sim_c: {
+            name: 'SIM_C_Ahmad_Zaini.png',
+            type: 'image/svg+xml',
+            sizeKB: 90,
+            url: createSampleDocumentDataUri('SURAT IZIN MENGEMUDI (SIM C)', 'Berlaku Aktif untuk Operasional Lapangan', 'SIMC-3514-998')
+          },
+          syahadah_pesantren: {
+            name: 'Syahadah_Ponpes_Podokaton.png',
+            type: 'image/svg+xml',
+            sizeKB: 155,
+            url: createSampleDocumentDataUri('SYAHADAH PONDOK PESANTREN', 'Santri Aktif Pondok Pesantren Podokaton (2016-2020)', 'SYH-PP-2020')
+          },
+          sertifikat: null
+        }
+      }
+    ],
+    lamaran: [
+      {
+        id: 'lam-1',
+        pelamar_id: 'pel-1',
+        lowongan_id: 'low-1',
+        nama_pelamar: 'Ahmad Zaini Miftah',
+        judul_posisi: 'Marketing Simpanan, Funding Officer',
+        status_seleksi: 'Lolos Administrasi',
+        catatan_hrd: 'Selamat! Berkas Anda lengkap. Silakan hadir wawancara pada Hari Senin pukul 09.00 WIB di Kantor Pusat KSPPS CMD Podokaton.',
+        tanggal_melamar: '2026-11-08'
+      }
+    ],
+    faq: [
+      {
+        id: 'faq-1',
+        pertanyaan: 'Apakah ada biaya pendaftaran?',
+        jawaban: 'Tidak ada. Seluruh tahapan rekrutmen di KSPPS CMD Podokaton 100% gratis dan tidak dipungut biaya apapun.',
+        urutan: 1
+      },
+      {
+        id: 'faq-2',
+        pertanyaan: 'Apakah bisa mendaftar lewat HP?',
+        jawaban: 'Sangat bisa. Portal ini dirancang responsif agar Anda dapat mengisi biodata dan memotret berkas langsung dari kamera HP.',
+        urutan: 2
+      }
+    ]
+  };
+
+  // ============================================================================
+  // HELPER UI & NOTIFIKASI
+  // ============================================================================
+  function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    const bgClass = type === 'error'
+      ? 'bg-rose-600 text-white'
+      : type === 'warning'
+      ? 'bg-amber-500 text-slate-950'
+      : 'bg-[#0B3B2D] text-white border border-emerald-400/30';
+
+    toast.className = `${bgClass} px-4 py-3 rounded-xl shadow-xl text-xs font-semibold flex items-center justify-between gap-3 pointer-events-auto transition-all duration-300`;
+    toast.innerHTML = `
+      <span>${message}</span>
+      <button class="opacity-75 hover:opacity-100 font-bold">&times;</button>
+    `;
+    toast.querySelector('button').onclick = () => toast.remove();
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+  }
+
+  function refreshIcons() {
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  }
+
+  // Inisialisasi IntersectionObserver untuk animasi muncul saat di-scroll di halaman publik
+  let scrollObserver = null;
+  function initScrollRevealAnimations() {
+    const rootContainer = document.getElementById('kspps-app-root');
+    const elements = document.querySelectorAll('.scroll-reveal');
+
+    if (!('IntersectionObserver' in window)) {
+      elements.forEach(el => el.classList.add('is-visible'));
+      return;
+    }
+
+    if (scrollObserver) {
+      scrollObserver.disconnect();
+    }
+
+    scrollObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      },
+      {
+        root: rootContainer,
+        threshold: 0.12,
+        rootMargin: '0px 0px -35px 0px'
+      }
+    );
+
+    elements.forEach((el) => {
+      scrollObserver.observe(el);
+    });
+  }
+
+  // ============================================================================
+  // DATA FETCHING (PREVIEW VS PRODUCTION SUPABASE)
+  // ============================================================================
+  async function loadInitialData() {
+    if (IS_PREVIEW) {
+      document.getElementById('preview-banner').classList.remove('hidden');
+      state.lowonganList = [...DUMMY_PREVIEW_DATA.lowongan];
+      state.pelamarList = [...DUMMY_PREVIEW_DATA.pelamar];
+      state.lamaranList = [...DUMMY_PREVIEW_DATA.lamaran];
+      state.faqList = [...DUMMY_PREVIEW_DATA.faq];
+      renderLandingPage();
+      return;
+    }
+
+    // MODE PRODUKSI (IS_PREVIEW = false) -> 100% Real Supabase
+    document.getElementById('preview-banner').classList.add('hidden');
+    try {
+      const [lowRes, faqRes] = await Promise.all([
+        supabase.from('lowongan').select('*'),
+        supabase.from('faq_rekrutmen').select('*')
+      ]);
+
+      if (lowRes.error) throw lowRes.error;
+      if (faqRes.error) throw faqRes.error;
+
+      state.lowonganList = lowRes.data || [];
+      state.faqList = (faqRes.data || []).sort((a, b) => (a.urutan || 0) - (b.urutan || 0));
+
+      // Cek apakah ada session Admin Supabase Auth yang masih aktif
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData && sessionData.session) {
+        state.currentUser = {
+          role: 'admin',
+          data: {
+            email: sessionData.session.user.email,
+            nama_lengkap: 'Administrator HRD'
+          }
+        };
+        await fetchAdminAllData();
+      }
+
+      renderLandingPage();
+      updateNavbarAuthButton();
+    } catch (err) {
+      showToast('Gagal memuat data dari database: ' + err.message, 'error');
+    }
+  }
+
+  async function fetchAdminAllData() {
+    if (IS_PREVIEW) return;
+    try {
+      const [pelRes, lamRes, lowRes, faqRes] = await Promise.all([
+        supabase.from('pelamar').select('*'),
+        supabase.from('lamaran').select('*'),
+        supabase.from('lowongan').select('*'),
+        supabase.from('faq_rekrutmen').select('*')
+      ]);
+      if (pelRes.data) state.pelamarList = pelRes.data;
+      if (lamRes.data) state.lamaranList = lamRes.data;
+      if (lowRes.data) state.lowonganList = lowRes.data;
+      if (faqRes.data) state.faqList = faqRes.data;
+    } catch (err) {
+      showToast('Gagal menyinkronkan data HRD: ' + err.message, 'error');
+    }
+  }
+
+  async function fetchPelamarApplications(pelamarId) {
+    if (IS_PREVIEW) return;
+    try {
+      const { data, error } = await supabase
+        .from('lamaran')
+        .select('*')
+        .eq('pelamar_id', pelamarId);
+      if (error) throw error;
+      state.lamaranList = data || [];
+    } catch (err) {
+      showToast('Gagal memuat riwayat lamaran: ' + err.message, 'error');
+    }
+  }
+
+  // ============================================================================
+  // RENDER HALAMAN PUBLIK (LANDING PAGE)
+  // ============================================================================
+  function renderLandingPage() {
+    const openJobs = state.lowonganList.filter(j => j.status === 'Dibuka');
+    document.getElementById('hero-job-count').textContent = openJobs.length;
+    document.getElementById('landing-job-count-label').textContent = `${openJobs.length} posisi ditampilkan`;
+
+    // 1. Render Preview di dalam Hero Card
+    const heroPreviewEl = document.getElementById('hero-job-preview');
+    if (openJobs.length === 0) {
+      heroPreviewEl.innerHTML = `
+        <div class="text-xs text-slate-400 py-2">Belum ada posisi yang dibuka saat ini.</div>
+      `;
+    } else {
+      heroPreviewEl.innerHTML = openJobs.slice(0, 2).map(job => `
+        <div class="p-3 rounded-xl bg-slate-50 hover:bg-emerald-50/60 border border-slate-200/70 transition flex items-center justify-between gap-2 cursor-pointer" onclick="document.getElementById('section-lowongan').scrollIntoView({behavior:'smooth'})">
+          <div class="min-w-0">
+            <div class="font-bold text-xs sm:text-sm text-slate-900 truncate">${job.judul_posisi}</div>
+            <div class="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
+              <i data-lucide="map-pin" class="w-3 h-3 text-emerald-700"></i>
+              <span class="truncate">${job.cabang}</span>
+            </div>
+          </div>
+          <span class="shrink-0 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+            Dibuka
+          </span>
+        </div>
+      `).join('');
+    }
+
+    // 2. Render Daftar Kartu Lowongan
+    const jobListEl = document.getElementById('landing-job-list');
+    if (openJobs.length === 0) {
+      jobListEl.innerHTML = `
+        <div class="p-8 rounded-2xl border border-slate-200 text-center bg-slate-50">
+          <div class="text-sm font-bold text-slate-700">Belum ada lowongan aktif</div>
+          <p class="text-xs text-slate-500 mt-1">Silakan buat akun terlebih dahulu agar siap saat rekrutmen gelombang berikutnya dibuka.</p>
+        </div>
+      `;
+    } else {
+      jobListEl.innerHTML = openJobs.map(job => `
+        <div class="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md transition">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3.5">
+              <div class="w-11 h-11 rounded-xl bg-[#0B3B2D] text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                <i data-lucide="briefcase" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-extrabold text-base sm:text-lg text-slate-900">${job.judul_posisi}</h3>
+                <div class="text-xs text-slate-500 flex items-center gap-1.5 mt-1">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-700"></i>
+                  <span>${job.cabang}</span>
+                </div>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold shrink-0">
+              ${job.status}
+            </span>
+          </div>
+
+          <!-- Qualification Chips -->
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium">${job.jenis_kelamin || 'Semua'}</span>
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium">Maks. ${job.usia_maksimal || 27} thn</span>
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium">${job.pendidikan_minimal || 'Min. SMA/SMK'}</span>
+            ${job.wajib_sim_c ? '<span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 text-xs font-semibold">Wajib SIM C</span>' : ''}
+          </div>
+
+          <p class="text-xs text-slate-600 leading-relaxed mt-3.5">
+            ${job.deskripsi || ''}
+          </p>
+
+          <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-[11px] text-slate-400 font-medium">Seleksi Administrasi & Wawancara Online/Offline</span>
+            <button onclick="window.app.applyFromLanding('${job.id}')" class="px-4 py-2 rounded-xl bg-[#0B3B2D] hover:bg-emerald-900 text-white text-xs font-bold transition flex items-center gap-1.5">
+              <span>Lamar Posisi Ini</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 3. Render Accordion FAQ
+    const faqListEl = document.getElementById('landing-faq-list');
+    if (state.faqList.length === 0) {
+      faqListEl.innerHTML = `<div class="text-xs text-slate-400">Belum ada data pertanyaan umum.</div>`;
+    } else {
+      faqListEl.innerHTML = state.faqList.map((item, idx) => `
+        <div class="bg-white rounded-xl border border-slate-200/80 overflow-hidden">
+          <button onclick="window.app.toggleFaq(${idx})" class="w-full px-5 py-4 text-left flex items-center justify-between gap-3 hover:bg-slate-50 transition">
+            <span class="font-bold text-xs sm:text-sm text-slate-800">${item.pertanyaan}</span>
+            <span id="faq-icon-${idx}" class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-sm shrink-0">+</span>
+          </button>
+          <div id="faq-ans-${idx}" class="hidden px-5 pb-4 text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+            ${item.jawaban}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    refreshIcons();
+    initScrollRevealAnimations();
+  }
+
+  function updateNavbarAuthButton() {
+    const guestEl = document.getElementById('nav-guest-actions');
+    const loggedEl = document.getElementById('nav-logged-actions');
+    if (state.currentUser) {
+      guestEl.classList.add('hidden');
+      loggedEl.classList.remove('hidden');
+      loggedEl.classList.add('flex');
+    } else {
+      guestEl.classList.remove('hidden');
+      loggedEl.classList.add('hidden');
+      loggedEl.classList.remove('flex');
+    }
+  }
+
+  // ============================================================================
+  // SISTEM AUTENTIKASI HYBRID (PELAMAR TABEL DB & ADMIN SUPABASE AUTH)
+  // ============================================================================
+  function openAuthModal(tab = 'login') {
+    document.getElementById('auth-modal').classList.remove('hidden');
+    switchAuthTab(tab);
+  }
+
+  function closeAuthModal() {
+    document.getElementById('auth-modal').classList.add('hidden');
+  }
+
+  function switchAuthTab(tab) {
+    const forms = {
+      login: document.getElementById('form-login-pelamar'),
+      register: document.getElementById('form-register-pelamar'),
+      admin: document.getElementById('form-login-admin')
+    };
+    const btns = {
+      login: document.getElementById('tab-btn-login'),
+      register: document.getElementById('tab-btn-register'),
+      admin: document.getElementById('tab-btn-admin')
+    };
+
+    Object.keys(forms).forEach(k => {
+      if (k === tab) {
+        forms[k].classList.remove('hidden');
+        btns[k].className = 'py-2 rounded-lg bg-[#0B3B2D] text-white shadow-sm transition';
+      } else {
+        forms[k].classList.add('hidden');
+        btns[k].className = 'py-2 rounded-lg text-slate-600 hover:text-slate-900 transition';
+      }
+    });
+  }
+
+  // Login Pelamar (Validasi Tabel `pelamar`)
+  async function handleLoginPelamar(e) {
+    e.preventDefault();
+    const identifier = document.getElementById('login-pelamar-identifier').value.trim();
+    const password = document.getElementById('login-pelamar-password').value;
+
+    if (IS_PREVIEW) {
+      const found = state.pelamarList.find(
+        p => (p.email.toLowerCase() === identifier.toLowerCase() || p.nik === identifier) && p.password === password
+      );
+      if (!found) {
+        showToast('Email/NIK atau kata sandi tidak cocok.', 'error');
+        return;
+      }
+      state.currentUser = { role: 'pelamar', data: found };
+      closeAuthModal();
+      enterDashboard('pantau');
+      showToast(`Selamat datang kembali, ${found.nama_lengkap}!`);
+      return;
+    }
+
+    // Real Supabase Query untuk Pelamar
+    try {
+      const { data, error } = await supabase
+        .from('pelamar')
+        .select('*')
+        .or(`email.eq.${identifier},nik.eq.${identifier}`)
+        .eq('password', password)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) {
+        showToast('Akun pelamar tidak ditemukan atau kata sandi salah.', 'error');
+        return;
+      }
+
+      state.currentUser = { role: 'pelamar', data };
+      await fetchPelamarApplications(data.id);
+      closeAuthModal();
+      enterDashboard('pantau');
+      showToast(`Assalamu'alaikum, ${data.nama_lengkap}!`);
+    } catch (err) {
+      showToast('Gagal masuk: ' + err.message, 'error');
+    }
+  }
+
+  // Registrasi Pelamar Baru
+  async function handleRegisterPelamar(e) {
+    e.preventDefault();
+    const nama_lengkap = document.getElementById('reg-nama').value.trim();
+    const nik = document.getElementById('reg-nik').value.trim();
+    const no_whatsapp = document.getElementById('reg-wa').value.trim();
+    const email = document.getElementById('reg-email').value.trim().toLowerCase();
+    const password = document.getElementById('reg-password').value;
+
+    const newPelamarObj = {
+      email,
+      password,
+      nama_lengkap,
+      nik,
+      tempat_lahir: '',
+      tanggal_lahir: null,
+      jenis_kelamin: 'Laki-laki',
+      no_whatsapp,
+      alamat_ktp: '',
+      pendidikan_terakhir: 'SMA/SMK/MA',
+      nama_institusi: '',
+      riwayat_pesantren: '',
+      pengalaman_kerja: '',
+      berkas_json: {}
+    };
+
+    if (IS_PREVIEW) {
+      const exists = state.pelamarList.some(p => p.email === email || p.nik === nik);
+      if (exists) {
+        showToast('Email atau NIK sudah terdaftar.', 'error');
+        return;
+      }
+      const created = { id: 'pel-' + Date.now(), ...newPelamarObj };
+      state.pelamarList.push(created);
+      state.currentUser = { role: 'pelamar', data: created };
+      closeAuthModal();
+      enterDashboard('biodata');
+      showToast('Akun berhasil dibuat! Silakan lengkapi biodata Anda.');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('pelamar')
+        .insert([newPelamarObj])
+        .select()
+        .single();
+
+      if (error) throw error;
+      state.currentUser = { role: 'pelamar', data };
+      state.lamaranList = [];
+      closeAuthModal();
+      enterDashboard('biodata');
+      showToast('Pendaftaran akun berhasil! Silakan lengkapi biodata Anda.');
+    } catch (err) {
+      showToast('Gagal mendaftar: Pastikan Email & NIK belum pernah didaftarkan.', 'error');
+    }
+  }
+
+  // Login Admin HRD (Via Supabase Auth)
+  async function handleLoginAdmin(e) {
+    e.preventDefault();
+    const email = document.getElementById('login-admin-email').value.trim();
+    const password = document.getElementById('login-admin-password').value;
+
+    if (IS_PREVIEW) {
+      state.currentUser = {
+        role: 'admin',
+        data: { email: email || 'hrd@ksppscmdpodokaton.id', nama_lengkap: 'Admin HRD Podokaton' }
+      };
+      closeAuthModal();
+      enterDashboard('hrd-summary');
+      showToast('Masuk sebagai Administrator HRD (Mode Preview).');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      state.currentUser = {
+        role: 'admin',
+        data: { email: data.user.email, nama_lengkap: 'Administrator HRD' }
+      };
+      await fetchAdminAllData();
+      closeAuthModal();
+      enterDashboard('hrd-summary');
+      showToast('Berhasil masuk ke Dashboard HRD KSPPS CMD Podokaton.');
+    } catch (err) {
+      showToast('Login Admin gagal: ' + err.message, 'error');
+    }
+  }
+
+  // Quick Login Buttons (Hanya untuk Mode Preview)
+  function quickLoginPelamar() {
+    if (!IS_PREVIEW) return;
+    state.currentUser = { role: 'pelamar', data: state.pelamarList[0] };
+    enterDashboard('pantau');
+    showToast('Pintasan Aktif: Masuk sebagai Pelamar (Ahmad Zaini)');
+  }
+
+  function quickLoginAdmin() {
+    if (!IS_PREVIEW) return;
+    state.currentUser = {
+      role: 'admin',
+      data: { email: 'hrd@ksppscmdpodokaton.id', nama_lengkap: 'Admin HRD Podokaton' }
+    };
+    enterDashboard('hrd-summary');
+    showToast('Pintasan Aktif: Masuk sebagai Admin HRD');
+  }
+
+  async function logout() {
+    if (!IS_PREVIEW && state.currentUser?.role === 'admin') {
+      await supabase.auth.signOut();
+    }
+    state.currentUser = null;
+    updateNavbarAuthButton();
+    showLandingPage();
+    showToast('Anda telah keluar dari sesi akun.');
+  }
+
+  // ============================================================================
+  // NAVIGASI DASHBOARD (PELAMAR & ADMIN HRD)
+  // ============================================================================
+  const PELAMAR_MENUS = [
+    { id: 'pantau', label: 'Pantau Seleksi', icon: 'activity', subtitle: 'Status lamaran kerja dan pengumuman hasil seleksi HRD' },
+    { id: 'biodata', label: 'Isi Biodata', icon: 'user-check', subtitle: 'Lengkapi data diri sesuai KTP, pendidikan, dan riwayat pesantren' },
+    { id: 'berkas', label: 'Berkas Lamaran', icon: 'folder-up', subtitle: 'Unggah berkas wajib dan dokumen pendukung rekrutmen' },
+    { id: 'lowongan-pelamar', label: 'Lowongan Tersedia', icon: 'briefcase', subtitle: 'Pilih posisi yang dibuka dan kirim lamaran secara online' }
+  ];
+
+  const ADMIN_MENUS = [
+    { id: 'hrd-summary', label: 'Dashboard HRD', icon: 'pie-chart', subtitle: 'Ringkasan statistik rekrutmen KSPPS CMD Podokaton' },
+    { id: 'hrd-lowongan', label: 'Manajemen Lowongan', icon: 'briefcase', subtitle: 'Kelola daftar posisi pekerjaan dan kualifikasi pelamar' },
+    { id: 'hrd-verifikasi', label: 'Verifikasi Pelamar', icon: 'users', subtitle: 'Periksa biodata, berkas, dan perbarui status kelulusan pelamar' },
+    { id: 'hrd-faq', label: 'Pengaturan & FAQ', icon: 'help-circle', subtitle: 'Kelola daftar pertanyaan umum pada portal rekrutmen' }
+  ];
+
+  function enterDashboard(defaultTab) {
+    if (!state.currentUser) {
+      openAuthModal('login');
+      return;
+    }
+    updateNavbarAuthButton();
+    document.getElementById('view-landing').classList.add('hidden');
+    document.getElementById('view-dashboard').classList.remove('hidden');
+
+    const isPelamar = state.currentUser.role === 'pelamar';
+    const menus = isPelamar ? PELAMAR_MENUS : ADMIN_MENUS;
+    state.activeTab = defaultTab || menus[0].id;
+
+    document.getElementById('sidebar-role-badge').textContent = isPelamar ? 'Portal Pelamar' : 'Administrator HRD';
+    document.getElementById('sidebar-user-name').textContent = state.currentUser.data.nama_lengkap || 'Pengguna';
+    document.getElementById('sidebar-user-email').textContent = state.currentUser.data.email || '';
+
+    renderDashboardNavigation();
+    renderActiveDashboardTab();
+  }
+
+  function showLandingPage() {
+    document.getElementById('view-dashboard').classList.add('hidden');
+    document.getElementById('view-landing').classList.remove('hidden');
+    renderLandingPage();
+  }
+
+  function switchDashboardTab(tabId) {
+    state.activeTab = tabId;
+    renderDashboardNavigation();
+    renderActiveDashboardTab();
+  }
+
+  function renderDashboardNavigation() {
+    const isPelamar = state.currentUser.role === 'pelamar';
+    const menus = isPelamar ? PELAMAR_MENUS : ADMIN_MENUS;
+
+    // Desktop Sidebar
+    const sidebarNav = document.getElementById('sidebar-nav-items');
+    sidebarNav.innerHTML = menus.map(m => {
+      const active = state.activeTab === m.id;
+      return `
+        <button onclick="window.app.switchDashboardTab('${m.id}')" class="w-full px-3.5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-3 transition ${
+          active
+            ? 'bg-amber-500 text-slate-950 shadow-sm'
+            : 'text-emerald-100/80 hover:bg-white/10 hover:text-white'
+        }">
+          <i data-lucide="${m.icon}" class="w-4 h-4"></i>
+          <span>${m.label}</span>
+        </button>
+      `;
+    }).join('');
+
+    // Mobile Bottom Nav
+    const mobileNav = document.getElementById('mobile-bottom-nav');
+    mobileNav.innerHTML = menus.map(m => {
+      const active = state.activeTab === m.id;
+      return `
+        <button onclick="window.app.switchDashboardTab('${m.id}')" class="flex-1 py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-1 transition ${
+          active ? 'bg-amber-500 text-slate-950 font-extrabold' : 'text-emerald-100/80 font-medium'
+        }">
+          <i data-lucide="${m.icon}" class="w-4 h-4"></i>
+          <span class="text-[10px] leading-none truncate max-w-[75px]">${m.label}</span>
+        </button>
+      `;
+    }).join('');
+
+    const currentMenuObj = menus.find(m => m.id === state.activeTab) || menus[0];
+    document.getElementById('dashboard-page-title').textContent = currentMenuObj.label;
+    document.getElementById('dashboard-page-subtitle').textContent = currentMenuObj.subtitle;
+  }
+
+  function renderActiveDashboardTab() {
+    const container = document.getElementById('dashboard-content-area');
+    switch (state.activeTab) {
+      // MENU PELAMAR
+      case 'pantau':
+        renderPelamarPantau(container);
+        break;
+      case 'biodata':
+        renderPelamarBiodata(container);
+        break;
+      case 'berkas':
+        renderPelamarBerkas(container);
+        break;
+      case 'lowongan-pelamar':
+        renderPelamarLowongan(container);
+        break;
+
+      // MENU ADMIN HRD
+      case 'hrd-summary':
+        renderAdminSummary(container);
+        break;
+      case 'hrd-lowongan':
+        renderAdminLowongan(container);
+        break;
+      case 'hrd-verifikasi':
+        renderAdminVerifikasi(container);
+        break;
+      case 'hrd-faq':
+        renderAdminFaq(container);
+        break;
+    }
+    refreshIcons();
+  }
+
+  // ============================================================================
+  // FITUR DASHBOARD PELAMAR (4 MENU LENGKAP)
+  // ============================================================================
+  function getPelamarCompleteness(p) {
+    const bioComplete = Boolean(p.nama_lengkap && p.nik && p.no_whatsapp && p.alamat_ktp && p.pendidikan_terakhir);
+    const berkas = p.berkas_json || {};
+    const wajibKeys = ['surat_lamaran', 'cv', 'ktp', 'ijazah', 'kk', 'pas_foto', 'skck', 'surat_sehat'];
+    const uploadedCount = wajibKeys.filter(k => Boolean(berkas[k])).length;
+    return { bioComplete, uploadedCount, totalWajib: wajibKeys.length };
+  }
+
+  // 1. Pantau Seleksi Pelamar
+  function renderPelamarPantau(container) {
+    const p = state.currentUser.data;
+    const { bioComplete, uploadedCount, totalWajib } = getPelamarCompleteness(p);
+    const myApps = state.lamaranList.filter(l => l.pelamar_id === p.id);
+
+    container.innerHTML = `
+      <div class="space-y-6">
+        <!-- Progress Banner -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <div class="text-xs text-slate-400 font-semibold">Status Biodata KTP</div>
+              <div class="text-base font-extrabold mt-1 ${bioComplete ? 'text-emerald-700' : 'text-amber-600'}">
+                ${bioComplete ? 'Sudah Lengkap' : 'Belum Lengkap'}
+              </div>
+            </div>
+            <button onclick="window.app.switchDashboardTab('biodata')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700">
+              Perbarui
+            </button>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <div class="text-xs text-slate-400 font-semibold">Berkas Wajib</div>
+              <div class="text-base font-extrabold mt-1 text-slate-900">
+                ${uploadedCount} / ${totalWajib} Dokumen
+              </div>
+            </div>
+            <button onclick="window.app.switchDashboardTab('berkas')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700">
+              Kelola
+            </button>
+          </div>
+
+          <div class="bg-[#0B3B2D] text-white p-5 rounded-2xl shadow-sm flex items-center justify-between">
+            <div>
+              <div class="text-xs text-emerald-200/80 font-semibold">Lamaran Terkirim</div>
+              <div class="text-2xl font-extrabold text-amber-400 mt-0.5">${myApps.length} Posisi</div>
+            </div>
+            <button onclick="window.app.switchDashboardTab('lowongan-pelamar')" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold">
+              Cari Lowongan
+            </button>
+          </div>
+        </div>
+
+        <!-- Riwayat & Status Seleksi -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <h3 class="text-base font-extrabold text-slate-900 mb-4">Status Lamaran & Pengumuman Seleksi</h3>
+          ${
+            myApps.length === 0
+              ? `
+              <div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                <i data-lucide="send" class="w-8 h-8 text-slate-400 mx-auto mb-2"></i>
+                <div class="text-sm font-bold text-slate-700">Belum ada lamaran yang dikirim</div>
+                <p class="text-xs text-slate-500 mt-1 mb-4">Lengkapi biodata & berkas wajib, lalu pilih posisi lowongan yang tersedia.</p>
+                <button onclick="window.app.switchDashboardTab('lowongan-pelamar')" class="px-4 py-2 rounded-xl bg-[#0B3B2D] text-white text-xs font-bold">
+                  Lihat Posisi Lowongan
+                </button>
+              </div>
+            `
+              : `<div class="space-y-4">
+                ${myApps.map(app => {
+                  const badgeColor =
+                    app.status_seleksi === 'Diterima' || app.status_seleksi === 'Lolos Administrasi'
+                      ? 'bg-emerald-100 text-emerald-800'
+                      : app.status_seleksi === 'Belum Lolos'
+                      ? 'bg-rose-100 text-rose-800'
+                      : 'bg-amber-100 text-amber-900';
+                  return `
+                    <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <div class="text-sm sm:text-base font-extrabold text-slate-900">${app.judul_posisi}</div>
+                          <div class="text-[11px] text-slate-400">Tanggal Melamar: ${String(app.tanggal_melamar || '').slice(0, 10)}</div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-extrabold ${badgeColor}">
+                          ${app.status_seleksi}
+                        </span>
+                      </div>
+                      <div class="p-3.5 rounded-xl bg-white border border-slate-200/80 text-xs text-slate-700 leading-relaxed">
+                        <strong class="text-slate-900 block mb-0.5">Pesan / Catatan HRD KSPPS CMD Podokaton:</strong>
+                        ${app.catatan_hrd || 'Berkas lamaran Anda telah diterima sistem dan sedang dalam antrean verifikasi tim HRD.'}
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>`
+          }
+        </div>
+      </div>
+    `;
+  }
+
+  // 2. Isi Biodata Pelamar
+  function renderPelamarBiodata(container) {
+    const p = state.currentUser.data;
+    container.innerHTML = `
+      <form onsubmit="window.app.savePelamarBiodata(event)" class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4">
+          <h3 class="text-base font-extrabold text-slate-900">Biodata Diri Sesuai KTP</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Pastikan NIK 16 digit dan data pendidikan diisi dengan benar.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap (Sesuai KTP)</label>
+            <input type="text" id="bio-nama" required value="${p.nama_lengkap || ''}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">NIK (16 Digit)</label>
+            <input type="text" id="bio-nik" required maxlength="16" minlength="16" value="${p.nik || ''}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Tempat Lahir</label>
+            <input type="text" id="bio-tempat-lahir" required value="${p.tempat_lahir || ''}" placeholder="Contoh: Pasuruan" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Lahir</label>
+            <input type="date" id="bio-tanggal-lahir" required value="${p.tanggal_lahir || ''}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Kelamin</label>
+            <select id="bio-jk" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm bg-white">
+              <option value="Laki-laki" ${p.jenis_kelamin === 'Laki-laki' ? 'selected' : ''}>Laki-laki</option>
+              <option value="Perempuan" ${p.jenis_kelamin === 'Perempuan' ? 'selected' : ''}>Perempuan</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Nomor WhatsApp Aktif</label>
+            <input type="text" id="bio-wa" required value="${p.no_whatsapp || ''}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Alamat Lengkap Sesuai KTP</label>
+          <textarea id="bio-alamat" rows="2" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm">${p.alamat_ktp || ''}</textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Pendidikan Formal Terakhir</label>
+            <select id="bio-pendidikan" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm bg-white">
+              <option value="SMA/SMK/MA" ${p.pendidikan_terakhir === 'SMA/SMK/MA' ? 'selected' : ''}>SMA / SMK / MA</option>
+              <option value="D3" ${p.pendidikan_terakhir === 'D3' ? 'selected' : ''}>Diploma (D3)</option>
+              <option value="S1" ${p.pendidikan_terakhir === 'S1' ? 'selected' : ''}>Sarjana (S1)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Sekolah / Kampus</label>
+            <input type="text" id="bio-institusi" required value="${p.nama_institusi || ''}" placeholder="Contoh: MAN 1 Pasuruan" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Riwayat Pendidikan Pondok Pesantren (Jika Ada)</label>
+            <textarea id="bio-pesantren" rows="2" placeholder="Nama Ponpes & Tahun Mondok (Kosongkan jika tidak ada)" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm">${p.riwayat_pesantren || ''}</textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Pengalaman Kerja / Organisasi</label>
+            <textarea id="bio-pengalaman" rows="2" placeholder="Sebutkan posisi & tahun pengalaman kerja" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm">${p.pengalaman_kerja || ''}</textarea>
+          </div>
+        </div>
+
+        <div class="pt-3 flex justify-end">
+          <button type="submit" class="px-6 py-2.5 rounded-xl bg-[#0B3B2D] hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm transition shadow-md flex items-center gap-2">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>Simpan Biodata Pelamar</span>
+          </button>
+        </div>
+      </form>
+    `;
+  }
+
+  async function savePelamarBiodata(e) {
+    e.preventDefault();
+    const p = state.currentUser.data;
+    const updatedFields = {
+      nama_lengkap: document.getElementById('bio-nama').value.trim(),
+      nik: document.getElementById('bio-nik').value.trim(),
+      tempat_lahir: document.getElementById('bio-tempat-lahir').value.trim(),
+      tanggal_lahir: document.getElementById('bio-tanggal-lahir').value || null,
+      jenis_kelamin: document.getElementById('bio-jk').value,
+      no_whatsapp: document.getElementById('bio-wa').value.trim(),
+      alamat_ktp: document.getElementById('bio-alamat').value.trim(),
+      pendidikan_terakhir: document.getElementById('bio-pendidikan').value,
+      nama_institusi: document.getElementById('bio-institusi').value.trim(),
+      riwayat_pesantren: document.getElementById('bio-pesantren').value.trim(),
+      pengalaman_kerja: document.getElementById('bio-pengalaman').value.trim()
+    };
+
+    if (IS_PREVIEW) {
+      Object.assign(p, updatedFields);
+      document.getElementById('sidebar-user-name').textContent = p.nama_lengkap;
+      showToast('Biodata berhasil disimpan!');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('pelamar')
+        .update(updatedFields)
+        .eq('id', p.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      state.currentUser.data = data;
+      document.getElementById('sidebar-user-name').textContent = data.nama_lengkap;
+      showToast('Biodata berhasil diperbarui ke database!');
+    } catch (err) {
+      showToast('Gagal menyimpan biodata: ' + err.message, 'error');
+    }
+  }
+
+  // 3. Unggah Berkas Pelamar
+  const BERKAS_ITEMS = [
+    { key: 'surat_lamaran', label: 'Surat Lamaran Kerja', wajib: true },
+    { key: 'cv', label: 'Daftar Riwayat Hidup (CV)', wajib: true },
+    { key: 'ktp', label: 'Foto / Scan KTP', wajib: true },
+    { key: 'ijazah', label: 'Scan Ijazah Terakhir', wajib: true },
+    { key: 'kk', label: 'Scan Kartu Keluarga (KK)', wajib: true },
+    { key: 'pas_foto', label: 'Pas Foto 4x6 Berwarna', wajib: true },
+    { key: 'skck', label: 'SKCK Aktif', wajib: true },
+    { key: 'surat_sehat', label: 'Surat Keterangan Sehat', wajib: true },
+    { key: 'sim_c', label: 'Foto SIM C', wajib: false },
+    { key: 'syahadah_pesantren', label: 'Syahadah / Ijazah Pesantren', wajib: false },
+    { key: 'sertifikat', label: 'Sertifikat Keahlian / Pengalaman', wajib: false }
+  ];
+
+  // Helper mengekstrak informasi objek berkas (mendukung format objek baru maupun string lama)
+  function normalizeBerkasEntry(entry) {
+    if (!entry) return null;
+    if (typeof entry === 'object' && entry.url) {
+      return {
+        name: entry.name || 'Dokumen Terunggah',
+        type: entry.type || '',
+        sizeKB: entry.sizeKB || 0,
+        url: entry.url
+      };
+    }
+    if (typeof entry === 'string' && entry.trim() !== '') {
+      const str = entry.trim();
+      const isUrl = str.startsWith('http://') || str.startsWith('https://') || str.startsWith('data:');
+      return {
+        name: str,
+        type: str.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'link',
+        sizeKB: 0,
+        url: isUrl ? str : ''
+      };
+    }
+    return null;
+  }
+
+  function renderPelamarBerkas(container) {
+    const p = state.currentUser.data;
+    const berkas = p.berkas_json || {};
+
+    container.innerHTML = `
+      <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900">Kelengkapan Berkas Lamaran</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Unggah file Gambar (JPG/PNG) atau PDF dari HP/Laptop, atau tempel tautan dokumen Anda.</p>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold">
+            Mendukung Gambar & PDF
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          ${BERKAS_ITEMS.map(item => {
+            const info = normalizeBerkasEntry(berkas[item.key]);
+            return `
+              <div class="p-4 rounded-xl border ${info ? 'border-emerald-300 bg-emerald-50/30' : 'border-slate-200'} space-y-2.5">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-xs sm:text-sm font-bold text-slate-800">${item.label}</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+                    item.wajib ? 'bg-amber-100 text-amber-900' : 'bg-slate-100 text-slate-600'
+                  }">
+                    ${item.wajib ? 'WAJIB' : 'JIKA ADA'}
+                  </span>
+                </div>
+
+                <div class="flex items-center justify-between gap-2">
+                  <div class="text-[11px] ${info ? 'text-emerald-700 font-semibold' : 'text-slate-400'} truncate">
+                    ${info ? `✓ ${info.name}${info.sizeKB ? ` (${info.sizeKB} KB)` : ''}` : 'Belum ada berkas diunggah'}
+                  </div>
+                  ${
+                    info && info.url
+                      ? `<button type="button" onclick="window.app.previewSingleBerkas('${p.id}', '${item.key}')" class="shrink-0 px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold flex items-center gap-1">
+                          <i data-lucide="eye" class="w-3 h-3"></i>
+                          <span>Lihat File</span>
+                        </button>`
+                      : ''
+                  }
+                </div>
+
+                <div class="flex items-center gap-2 pt-1">
+                  <label class="px-3 py-1.5 rounded-lg bg-[#0B3B2D] hover:bg-emerald-900 text-white text-xs font-bold cursor-pointer transition shrink-0 flex items-center gap-1.5">
+                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                    <span>Pilih PDF / Foto</span>
+                    <input type="file" accept="image/*,application/pdf,.pdf" class="hidden" onchange="window.app.handleFileSelect('${item.key}', this)" />
+                  </label>
+                  <input type="text" placeholder="Atau tempel link GDrive/PDF..." value="${info && !info.url.startsWith('data:') ? info.url : ''}" onchange="window.app.handleBerkasText('${item.key}', this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs" />
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div class="pt-2 flex justify-end">
+          <button onclick="window.app.saveAllBerkasPelamar()" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs sm:text-sm transition shadow-md flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span>Simpan Seluruh Berkas</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Konversi gambar atau PDF menjadi Data URL (dengan kompresi otomatis untuk gambar besar)
+  function handleFileSelect(key, inputEl) {
+    const file = inputEl.files[0];
+    if (!file) return;
+    const p = state.currentUser.data;
+    if (!p.berkas_json) p.berkas_json = {};
+
+    // Jika file gambar, kompres menggunakan Canvas agar ringan disimpan dan cepat dibuka HRD
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        const img = new Image();
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          const maxDim = 1100;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.78);
+          const approxKB = Math.max(15, Math.round((dataUrl.length * 0.75) / 1024));
+
+          p.berkas_json[key] = {
+            name: file.name,
+            type: 'image/jpeg',
+            sizeKB: approxKB,
+            url: dataUrl
+          };
+          renderActiveDashboardTab();
+          showToast(`Foto "${file.name}" berhasil dikompresi (${approxKB} KB) & siap dilihat HRD.`);
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
+
+    // Jika file PDF
+    if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+      if (file.size > 2.5 * 1024 * 1024) {
+        showToast('Ukuran PDF maksimal 2.5 MB. Gunakan tautan Google Drive jika ukuran PDF lebih besar.', 'warning');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        const sizeKB = Math.round(file.size / 1024);
+        p.berkas_json[key] = {
+          name: file.name,
+          type: 'application/pdf',
+          sizeKB,
+          url: ev.target.result
+        };
+        renderActiveDashboardTab();
+        showToast(`Dokumen PDF "${file.name}" (${sizeKB} KB) siap disimpan & dapat dibuka HRD.`);
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
+
+    showToast('Mohon pilih file berformat Gambar (JPG/PNG) atau PDF.', 'error');
+  }
+
+  function handleBerkasText(key, val) {
+    const p = state.currentUser.data;
+    if (!p.berkas_json) p.berkas_json = {};
+    const clean = val.trim();
+    if (!clean) {
+      p.berkas_json[key] = null;
+      return;
+    }
+    p.berkas_json[key] = {
+      name: clean,
+      type: clean.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'link',
+      sizeKB: 0,
+      url: clean
+    };
+    renderActiveDashboardTab();
+  }
+
+  async function saveAllBerkasPelamar() {
+    const p = state.currentUser.data;
+    if (IS_PREVIEW) {
+      showToast('Seluruh kelengkapan berkas berhasil disimpan!');
+      renderActiveDashboardTab();
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('pelamar')
+        .update({ berkas_json: p.berkas_json || {} })
+        .eq('id', p.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      state.currentUser.data = data;
+      showToast('Berkas lamaran berhasil disimpan ke database!');
+      renderActiveDashboardTab();
+    } catch (err) {
+      showToast('Gagal menyimpan berkas: ' + err.message, 'error');
+    }
+  }
+
+  // 4. Pilih & Kirim Lamaran (Lowongan Tersedia)
+  function renderPelamarLowongan(container) {
+    const openJobs = state.lowonganList.filter(j => j.status === 'Dibuka');
+    const p = state.currentUser.data;
+    const myApps = state.lamaranList.filter(l => l.pelamar_id === p.id);
+
+    container.innerHTML = `
+      <div class="space-y-4">
+        ${
+          openJobs.length === 0
+            ? `<div class="p-8 rounded-2xl bg-white border border-slate-200 text-center text-sm text-slate-500">Belum ada posisi lowongan yang dibuka saat ini.</div>`
+            : openJobs.map(job => {
+                const alreadyApplied = myApps.some(a => a.lowongan_id === job.id);
+                return `
+                  <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="space-y-2">
+                      <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">Dibuka</span>
+                        <span class="text-xs text-slate-500">${job.cabang}</span>
+                      </div>
+                      <h3 class="text-base sm:text-lg font-extrabold text-slate-900">${job.judul_posisi}</h3>
+                      <p class="text-xs text-slate-600 max-w-2xl">${job.deskripsi || ''}</p>
+                      <div class="flex flex-wrap gap-2 pt-1">
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium">${job.jenis_kelamin}</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium">Maks. ${job.usia_maksimal} thn</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium">${job.pendidikan_minimal}</span>
+                      </div>
+                    </div>
+                    <div class="shrink-0">
+                      ${
+                        alreadyApplied
+                          ? `<span class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-extrabold">
+                              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                              <span>Sudah Dilamar</span>
+                            </span>`
+                          : `<button onclick="window.app.submitJobApplication('${job.id}')" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs sm:text-sm transition shadow-sm">
+                              Kirim Lamaran Sekarang
+                            </button>`
+                      }
+                    </div>
+                  </div>
+                `;
+              }).join('')
+        }
+      </div>
+    `;
+  }
+
+  async function submitJobApplication(lowonganId) {
+    const p = state.currentUser.data;
+    const { bioComplete, uploadedCount } = getPelamarCompleteness(p);
+
+    if (!bioComplete) {
+      showToast('Mohon lengkapi Biodata KTP Anda terlebih dahulu sebelum melamar.', 'warning');
+      switchDashboardTab('biodata');
+      return;
+    }
+    if (uploadedCount < 4) {
+      showToast('Mohon unggah minimal berkas utama (KTP, CV, Surat Lamaran, Ijazah) terlebih dahulu.', 'warning');
+      switchDashboardTab('berkas');
+      return;
+    }
+
+    const job = state.lowonganList.find(j => j.id === lowonganId);
+    if (!job) return;
+
+    const newAppObj = {
+      pelamar_id: p.id,
+      lowongan_id: job.id,
+      nama_pelamar: p.nama_lengkap,
+      judul_posisi: job.judul_posisi,
+      status_seleksi: 'Menunggu Verifikasi',
+      catatan_hrd: 'Lamaran Anda telah diterima oleh sistem E-Rekrutmen KSPPS CMD Podokaton dan sedang menunggu verifikasi HRD.'
+    };
+
+    if (IS_PREVIEW) {
+      state.lamaranList.push({
+        id: 'lam-' + Date.now(),
+        ...newAppObj,
+        tanggal_melamar: new Date().toISOString().slice(0, 10)
+      });
+      showToast(`Lamaran untuk posisi ${job.judul_posisi} berhasil dikirim!`);
+      switchDashboardTab('pantau');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('lamaran')
+        .insert([newAppObj])
+        .select()
+        .single();
+
+      if (error) throw error;
+      state.lamaranList.push(data);
+      showToast(`Lamaran untuk posisi ${job.judul_posisi} berhasil dikirim!`);
+      switchDashboardTab('pantau');
+    } catch (err) {
+      showToast('Gagal mengirim lamaran: ' + err.message, 'error');
+    }
+  }
+
+  function applyFromLanding(lowonganId) {
+    if (!state.currentUser) {
+      openAuthModal('register');
+      showToast('Silakan buat akun atau masuk terlebih dahulu untuk melamar posisi ini.');
+      return;
+    }
+    if (state.currentUser.role === 'admin') {
+      enterDashboard('hrd-lowongan');
+      return;
+    }
+    enterDashboard('lowongan-pelamar');
+  }
+
+  // ============================================================================
+  // FITUR DASHBOARD ADMIN HRD (4 MENU LENGKAP)
+  // ============================================================================
+  // 1. Ringkasan HRD
+  function renderAdminSummary(container) {
+    const totalLowongan = state.lowonganList.length;
+    const lowonganAktif = state.lowonganList.filter(l => l.status === 'Dibuka').length;
+    const totalPelamar = state.pelamarList.length;
+    const totalLamaran = state.lamaranList.length;
+
+    container.innerHTML = `
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-xs font-bold text-slate-400 uppercase">Lowongan Dibuka</div>
+            <div class="text-3xl font-extrabold text-[#0B3B2D] mt-1">${lowonganAktif} <span class="text-xs font-normal text-slate-400">/ ${totalLowongan} total</span></div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-xs font-bold text-slate-400 uppercase">Akun Pelamar Terdaftar</div>
+            <div class="text-3xl font-extrabold text-slate-900 mt-1">${totalPelamar}</div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-xs font-bold text-slate-400 uppercase">Total Lamaran Masuk</div>
+            <div class="text-3xl font-extrabold text-amber-600 mt-1">${totalLamaran}</div>
+          </div>
+          <div class="bg-[#0B3B2D] text-white p-5 rounded-2xl shadow-sm">
+            <div class="text-xs font-bold text-emerald-200/80 uppercase">Lolos / Diterima</div>
+            <div class="text-3xl font-extrabold text-amber-400 mt-1">
+              ${state.lamaranList.filter(l => l.status_seleksi === 'Lolos Administrasi' || l.status_seleksi === 'Diterima').length}
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-extrabold text-slate-900">Lamaran Terbaru Masuk</h3>
+            <button onclick="window.app.switchDashboardTab('hrd-verifikasi')" class="text-xs font-bold text-emerald-700 hover:underline">
+              Lihat Semua & Verifikasi &rarr;
+            </button>
+          </div>
+          ${
+            state.lamaranList.length === 0
+              ? `<div class="text-xs text-slate-400 py-6 text-center">Belum ada data lamaran masuk.</div>`
+              : `<div class="overflow-x-auto">
+                  <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr class="border-b border-slate-200 text-slate-400 uppercase">
+                        <th class="py-3 px-2">Nama Pelamar</th>
+                        <th class="py-3 px-2">Posisi Dilamar</th>
+                        <th class="py-3 px-2">Status Seleksi</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                      ${state.lamaranList.slice(0, 5).map(l => `
+                        <tr>
+                          <td class="py-3 px-2 font-bold text-slate-900">${l.nama_pelamar}</td>
+                          <td class="py-3 px-2 text-slate-600">${l.judul_posisi}</td>
+                          <td class="py-3 px-2">
+                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[11px]">${l.status_seleksi}</span>
+                          </td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>`
+          }
+        </div>
+      </div>
+    `;
+  }
+
+  // 2. Manajemen Lowongan (CRUD)
+  function renderAdminLowongan(container) {
+    container.innerHTML = `
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <!-- Form Tambah Lowongan (5 Cols) -->
+        <form onsubmit="window.app.handleSaveLowongan(event)" class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+          <h3 class="text-base font-extrabold text-slate-900">Tambah Posisi Lowongan</h3>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Judul Posisi / Jabatan</label>
+            <input type="text" id="low-judul" required placeholder="Contoh: Marketing Pembiayaan Syariah" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Kantor Cabang Penempatan</label>
+            <input type="text" id="low-cabang" required placeholder="Contoh: Kantor Pusat Podokaton" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Syarat Jenis Kelamin</label>
+              <select id="low-jk" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white">
+                <option value="Laki-laki / Perempuan">Laki-laki / Perempuan</option>
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Usia Maksimal (Thn)</label>
+              <input type="number" id="low-usia" required value="27" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Pendidikan Minimal</label>
+              <input type="text" id="low-pendidikan" required value="Min. SMA/SMK/MA" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Status Lowongan</label>
+              <select id="low-status" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white">
+                <option value="Dibuka">Dibuka</option>
+                <option value="Ditutup">Ditutup</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="low-simc" checked class="rounded" />
+            <label for="low-simc" class="text-xs font-semibold text-slate-700">Wajib memiliki SIM C</label>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Deskripsi Tugas & Kualifikasi</label>
+            <textarea id="low-deskripsi" rows="3" required placeholder="Jelaskan tugas singkat posisi ini..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"></textarea>
+          </div>
+          <button type="submit" class="w-full py-2.5 rounded-xl bg-[#0B3B2D] hover:bg-emerald-900 text-white font-bold text-xs transition">
+            Simpan & Publikasikan Lowongan
+          </button>
+        </form>
+
+        <!-- Daftar Lowongan (7 Cols) -->
+        <div class="lg:col-span-7 space-y-3">
+          ${
+            state.lowonganList.length === 0
+              ? `<div class="p-8 bg-white rounded-2xl border border-slate-200 text-center text-xs text-slate-400">Belum ada data lowongan di database.</div>`
+              : state.lowonganList.map(job => `
+                  <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-start justify-between gap-4">
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                          job.status === 'Dibuka' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
+                        }">${job.status}</span>
+                        <span class="text-xs text-slate-500">${job.cabang}</span>
+                      </div>
+                      <h4 class="font-extrabold text-sm sm:text-base text-slate-900 mt-1">${job.judul_posisi}</h4>
+                      <p class="text-xs text-slate-600 mt-1">${job.deskripsi || ''}</p>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                      <button onclick="window.app.toggleStatusLowongan('${job.id}')" class="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-[11px] font-bold text-slate-700">
+                        ${job.status === 'Dibuka' ? 'Tutup' : 'Buka'}
+                      </button>
+                      <button onclick="window.app.deleteLowongan('${job.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-[11px] font-bold">
+                        Hapus
+                      </button>
+                    </div>
+                  </div>
+                `).join('')
+          }
+        </div>
+      </div>
+    `;
+  }
+
+  async function handleSaveLowongan(e) {
+    e.preventDefault();
+    const newJob = {
+      judul_posisi: document.getElementById('low-judul').value.trim(),
+      cabang: document.getElementById('low-cabang').value.trim(),
+      jenis_kelamin: document.getElementById('low-jk').value,
+      usia_maksimal: parseInt(document.getElementById('low-usia').value, 10) || 27,
+      pendidikan_minimal: document.getElementById('low-pendidikan').value.trim(),
+      status: document.getElementById('low-status').value,
+      wajib_sim_c: document.getElementById('low-simc').checked,
+      deskripsi: document.getElementById('low-deskripsi').value.trim()
+    };
+
+    if (IS_PREVIEW) {
+      state.lowonganList.unshift({ id: 'low-' + Date.now(), ...newJob });
+      renderActiveDashboardTab();
+      showToast('Lowongan baru berhasil ditambahkan!');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.from('lowongan').insert([newJob]).select().single();
+      if (error) throw error;
+      state.lowonganList.unshift(data);
+      renderActiveDashboardTab();
+      showToast('Lowongan berhasil disimpan ke Supabase!');
+    } catch (err) {
+      showToast('Gagal menambah lowongan: ' + err.message, 'error');
+    }
+  }
+
+  async function toggleStatusLowongan(id) {
+    const job = state.lowonganList.find(j => j.id === id);
+    if (!job) return;
+    const newStatus = job.status === 'Dibuka' ? 'Ditutup' : 'Dibuka';
+
+    if (IS_PREVIEW) {
+      job.status = newStatus;
+      renderActiveDashboardTab();
+      showToast(`Status lowongan diubah menjadi ${newStatus}.`);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from('lowongan').update({ status: newStatus }).eq('id', id);
+      if (error) throw error;
+      job.status = newStatus;
+      renderActiveDashboardTab();
+      showToast(`Status lowongan diperbarui menjadi ${newStatus}.`);
+    } catch (err) {
+      showToast('Gagal mengubah status: ' + err.message, 'error');
+    }
+  }
+
+  async function deleteLowongan(id) {
+    if (IS_PREVIEW) {
+      state.lowonganList = state.lowonganList.filter(j => j.id !== id);
+      renderActiveDashboardTab();
+      showToast('Lowongan dihapus.');
+      return;
+    }
+    try {
+      const { error } = await supabase.from('lowongan').delete().eq('id', id);
+      if (error) throw error;
+      state.lowonganList = state.lowonganList.filter(j => j.id !== id);
+      renderActiveDashboardTab();
+      showToast('Lowongan berhasil dihapus dari database.');
+    } catch (err) {
+      showToast('Gagal menghapus: ' + err.message, 'error');
+    }
+  }
+
+  // 3. Verifikasi Pelamar & Update Hasil Seleksi
+  function renderAdminVerifikasi(container) {
+    container.innerHTML = `
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-base font-extrabold text-slate-900">Daftar Lamaran Masuk & Verifikasi Seleksi</h3>
+        ${
+          state.lamaranList.length === 0
+            ? `<div class="p-8 text-center text-xs text-slate-400">Belum ada lamaran yang masuk.</div>`
+            : `<div class="space-y-4">
+                ${state.lamaranList.map(lam => {
+                  const pelamar = state.pelamarList.find(p => p.id === lam.pelamar_id) || {};
+                  return `
+                    <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-4">
+                      <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <div class="text-base font-extrabold text-slate-900">${lam.nama_pelamar}</div>
+                          <div class="text-xs text-emerald-800 font-bold">Melamar: ${lam.judul_posisi}</div>
+                          <div class="text-[11px] text-slate-500 mt-0.5">
+                            NIK: ${pelamar.nik || '-'} | WA: ${pelamar.no_whatsapp || '-'} | Pendidikan: ${pelamar.pendidikan_terakhir || '-'}
+                          </div>
+                        </div>
+                        <button onclick="window.app.inspectApplicant('${lam.pelamar_id}')" class="px-4 py-2 rounded-xl bg-[#0B3B2D] hover:bg-emerald-900 text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition">
+                          <i data-lucide="folder-open" class="w-4 h-4 text-amber-400"></i>
+                          <span>Lihat Biodata & Buka Berkas</span>
+                        </button>
+                      </div>
+
+                      <div class="grid grid-cols-1 md:grid-cols-12 gap-3 pt-2 border-t border-slate-200/70 items-end">
+                        <div class="md:col-span-4">
+                          <label class="block text-[11px] font-bold text-slate-600 mb-1">Keputusan Status Seleksi</label>
+                          <select id="status-sel-${lam.id}" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white font-semibold">
+                            <option value="Menunggu Verifikasi" ${lam.status_seleksi === 'Menunggu Verifikasi' ? 'selected' : ''}>Menunggu Verifikasi</option>
+                            <option value="Lolos Administrasi" ${lam.status_seleksi === 'Lolos Administrasi' ? 'selected' : ''}>Lolos Administrasi</option>
+                            <option value="Jadwal Tes & Wawancara" ${lam.status_seleksi === 'Jadwal Tes & Wawancara' ? 'selected' : ''}>Jadwal Tes & Wawancara</option>
+                            <option value="Diterima" ${lam.status_seleksi === 'Diterima' ? 'selected' : ''}>Diterima Bekerja</option>
+                            <option value="Belum Lolos" ${lam.status_seleksi === 'Belum Lolos' ? 'selected' : ''}>Belum Lolos</option>
+                          </select>
+                        </div>
+                        <div class="md:col-span-6">
+                          <label class="block text-[11px] font-bold text-slate-600 mb-1">Catatan / Panggilan Wawancara untuk Pelamar</label>
+                          <input type="text" id="catatan-sel-${lam.id}" value="${lam.catatan_hrd || ''}" placeholder="Tulis jadwal wawancara atau pesan hasil seleksi..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white" />
+                        </div>
+                        <div class="md:col-span-2">
+                          <button onclick="window.app.updateLamaranStatus('${lam.id}')" class="w-full py-2 rounded-xl bg-[#0B3B2D] hover:bg-emerald-900 text-white font-bold text-xs transition">
+                            Simpan Status
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>`
+        }
+      </div>
+    `;
+  }
+
+  function inspectApplicant(pelamarId) {
+    const p = state.pelamarList.find(item => item.id === pelamarId);
+    if (!p) {
+      showToast('Data detail pelamar tidak ditemukan.', 'error');
+      return;
+    }
+    const berkas = p.berkas_json || {};
+    const modal = document.getElementById('admin-applicant-modal');
+    const body = document.getElementById('admin-applicant-modal-body');
+
+    body.innerHTML = `
+      <div class="space-y-5">
+        <div class="border-b border-slate-200 pb-4 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase mb-1">
+              Data Lengkap Pelamar
+            </div>
+            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">${p.nama_lengkap}</h3>
+            <p class="text-xs text-slate-500 mt-0.5">NIK KTP: <strong class="text-slate-800">${p.nik || '-'}</strong> &bull; Email: ${p.email}</p>
+          </div>
+          <a href="https://wa.me/${String(p.no_whatsapp || '').replace(/^0/, '62')}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+            <span>Hubungi WA (${p.no_whatsapp || '-'})</span>
+          </a>
+        </div>
+
+        <!-- Tabel Biodata Lengkap -->
+        <div>
+          <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-2.5">1. Biodata Diri & Riwayat Pelamar</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70">
+              <span class="text-slate-400 block text-[11px]">Tempat, Tanggal Lahir</span>
+              <strong class="text-slate-800">${p.tempat_lahir || '-'}, ${p.tanggal_lahir || '-'}</strong>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70">
+              <span class="text-slate-400 block text-[11px]">Jenis Kelamin</span>
+              <strong class="text-slate-800">${p.jenis_kelamin || '-'}</strong>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70">
+              <span class="text-slate-400 block text-[11px]">Pendidikan Formal Terakhir</span>
+              <strong class="text-slate-800">${p.pendidikan_terakhir || '-'} — ${p.nama_institusi || '-'}</strong>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70">
+              <span class="text-slate-400 block text-[11px]">Riwayat Pondok Pesantren</span>
+              <strong class="text-slate-800">${p.riwayat_pesantren || 'Tidak dicantumkan'}</strong>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 sm:col-span-2">
+              <span class="text-slate-400 block text-[11px]">Alamat Sesuai KTP</span>
+              <strong class="text-slate-800">${p.alamat_ktp || '-'}</strong>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 sm:col-span-2">
+              <span class="text-slate-400 block text-[11px]">Pengalaman Kerja / Organisasi</span>
+              <strong class="text-slate-800">${p.pengalaman_kerja || '-'}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Daftar Berkas dengan Tombol Buka File PDF / Gambar -->
+        <div>
+          <div class="flex items-center justify-between mb-2.5">
+            <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400">2. Dokumen & Berkas yang Diunggah Pelamar</h4>
+            <span class="text-[11px] text-emerald-700 font-semibold">Klik "Buka File" untuk melihat PDF / Gambar</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+            ${BERKAS_ITEMS.map(b => {
+              const info = normalizeBerkasEntry(berkas[b.key]);
+              const isUploaded = Boolean(info);
+              return `
+                <div class="p-3 rounded-xl border flex items-center justify-between gap-2 ${
+                  isUploaded
+                    ? 'border-emerald-200 bg-emerald-50/40 text-slate-900'
+                    : 'border-slate-200 bg-slate-50/50 text-slate-400'
+                }">
+                  <div class="min-w-0">
+                    <div class="font-bold flex items-center gap-1.5">
+                      <span>${b.label}</span>
+                      ${
+                        b.wajib
+                          ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 font-extrabold">WAJIB</span>'
+                          : ''
+                      }
+                    </div>
+                    <div class="truncate text-[11px] mt-0.5 ${isUploaded ? 'text-emerald-700 font-medium' : 'text-slate-400'}">
+                      ${isUploaded ? info.name : 'Belum diunggah'}
+                    </div>
+                  </div>
+                  ${
+                    isUploaded && info.url
+                      ? `<button type="button" onclick="window.app.previewSingleBerkas('${p.id}', '${b.key}')" class="shrink-0 px-3 py-1.5 rounded-lg bg-[#0B3B2D] hover:bg-emerald-900 text-white text-[11px] font-bold flex items-center gap-1 shadow-sm transition">
+                          <i data-lucide="eye" class="w-3.5 h-3.5 text-amber-400"></i>
+                          <span>Buka File</span>
+                        </button>`
+                      : `<span class="shrink-0 text-[10px] px-2 py-1 rounded bg-slate-200/70 text-slate-500 font-semibold">Kosong</span>`
+                  }
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+    modal.classList.remove('hidden');
+    refreshIcons();
+  }
+
+  function closeApplicantModal() {
+    document.getElementById('admin-applicant-modal').classList.add('hidden');
+  }
+
+  // Fungsi Membuka & Menampilkan Pratinjau File (Gambar / PDF / Link Google Drive)
+  function previewSingleBerkas(pelamarId, berkasKey) {
+    let targetPelamar = state.pelamarList.find(item => item.id === pelamarId);
+    if (!targetPelamar && state.currentUser?.data?.id === pelamarId) {
+      targetPelamar = state.currentUser.data;
+    }
+    if (!targetPelamar) {
+      showToast('Data pelamar tidak ditemukan.', 'error');
+      return;
+    }
+
+    const rawEntry = (targetPelamar.berkas_json || {})[berkasKey];
+    const info = normalizeBerkasEntry(rawEntry);
+    const labelObj = BERKAS_ITEMS.find(b => b.key === berkasKey);
+    const docLabel = labelObj ? labelObj.label : 'Dokumen Pelamar';
+
+    if (!info || !info.url) {
+      showToast('Berkas ini belum memiliki file atau tautan yang dapat dibuka.', 'warning');
+      return;
+    }
+
+    const modal = document.getElementById('file-viewer-modal');
+    const titleEl = document.getElementById('file-viewer-title');
+    const subtitleEl = document.getElementById('file-viewer-subtitle');
+    const bodyEl = document.getElementById('file-viewer-body');
+    const downloadBtn = document.getElementById('file-viewer-download');
+
+    titleEl.textContent = `${docLabel} — ${targetPelamar.nama_lengkap}`;
+    subtitleEl.textContent = info.name || 'Berkas Lamaran';
+    downloadBtn.href = info.url;
+    downloadBtn.setAttribute('download', info.name || 'berkas-pelamar');
+
+    const isImage =
+      info.type.startsWith('image/') ||
+      info.url.startsWith('data:image/') ||
+      /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(info.name);
+
+    const isPdf =
+      info.type === 'application/pdf' ||
+      info.url.startsWith('data:application/pdf') ||
+      /\.pdf$/i.test(info.name) ||
+      /\.pdf$/i.test(info.url);
+
+    if (isImage) {
+      bodyEl.innerHTML = `
+        <div class="w-full flex flex-col items-center justify-center gap-3">
+          <img src="${info.url}" alt="${docLabel}" class="max-h-[70vh] w-auto object-contain rounded-xl shadow-lg border border-slate-200 bg-white p-2" />
+        </div>
+      `;
+    } else if (isPdf) {
+      bodyEl.innerHTML = `
+        <iframe src="${info.url}" class="w-full h-[70vh] rounded-xl border border-slate-300 bg-white shadow-inner" title="${docLabel}"></iframe>
+      `;
+    } else {
+      // Jika berupa tautan eksternal (misal Google Drive)
+      bodyEl.innerHTML = `
+        <div class="bg-white p-8 rounded-2xl border border-slate-200 text-center max-w-md space-y-4 shadow-sm">
+          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto">
+            <i data-lucide="external-link" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h5 class="text-sm font-extrabold text-slate-900">Tautan Dokumen Eksternal</h5>
+            <p class="text-xs text-slate-500 mt-1 break-all">${info.url}</p>
+          </div>
+          <a href="${info.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0B3B2D] hover:bg-emerald-900 text-white text-xs font-bold shadow-md">
+            <span>Buka Dokumen di Tab Baru</span>
+            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+      `;
+    }
+
+    modal.classList.remove('hidden');
+    refreshIcons();
+  }
+
+  function closeFileViewer() {
+    document.getElementById('file-viewer-modal').classList.add('hidden');
+    document.getElementById('file-viewer-body').innerHTML = '';
+  }
+
+  async function updateLamaranStatus(lamaranId) {
+    const status_seleksi = document.getElementById(`status-sel-${lamaranId}`).value;
+    const catatan_hrd = document.getElementById(`catatan-sel-${lamaranId}`).value.trim();
+    const target = state.lamaranList.find(l => l.id === lamaranId);
+    if (!target) return;
+
+    if (IS_PREVIEW) {
+      target.status_seleksi = status_seleksi;
+      target.catatan_hrd = catatan_hrd;
+      showToast(`Status lamaran ${target.nama_pelamar} diperbarui menjadi "${status_seleksi}".`);
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('lamaran')
+        .update({ status_seleksi, catatan_hrd })
+        .eq('id', lamaranId);
+
+      if (error) throw error;
+      target.status_seleksi = status_seleksi;
+      target.catatan_hrd = catatan_hrd;
+      showToast('Keputusan hasil seleksi berhasil disimpan ke database!');
+    } catch (err) {
+      showToast('Gagal menyimpan status: ' + err.message, 'error');
+    }
+  }
+
+  // 4. Pengaturan FAQ Rekrutmen
+  function renderAdminFaq(container) {
+    container.innerHTML = `
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <form onsubmit="window.app.handleSaveFaq(event)" class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+          <h3 class="text-base font-extrabold text-slate-900">Tambah FAQ Baru</h3>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Pertanyaan</label>
+            <input type="text" id="faq-q" required placeholder="Contoh: Bagaimana cara mengetahui hasil seleksi?" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Jawaban</label>
+            <textarea id="faq-a" rows="3" required placeholder="Tulis jawaban jelas..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"></textarea>
+          </div>
+          <button type="submit" class="w-full py-2.5 rounded-xl bg-[#0B3B2D] hover:bg-emerald-900 text-white font-bold text-xs transition">
+            Simpan FAQ
+          </button>
+        </form>
+
+        <div class="lg:col-span-7 space-y-3">
+          ${
+            state.faqList.length === 0
+              ? `<div class="p-8 bg-white rounded-2xl border border-slate-200 text-center text-xs text-slate-400">Belum ada FAQ.</div>`
+              : state.faqList.map(f => `
+                  <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-start justify-between gap-4">
+                    <div>
+                      <h4 class="font-bold text-sm text-slate-900">${f.pertanyaan}</h4>
+                      <p class="text-xs text-slate-600 mt-1">${f.jawaban}</p>
+                    </div>
+                    <button onclick="window.app.deleteFaq('${f.id}')" class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold shrink-0">
+                      Hapus
+                    </button>
+                  </div>
+                `).join('')
+          }
+        </div>
+      </div>
+    `;
+  }
+
+  async function handleSaveFaq(e) {
+    e.preventDefault();
+    const pertanyaan = document.getElementById('faq-q').value.trim();
+    const jawaban = document.getElementById('faq-a').value.trim();
+    const urutan = state.faqList.length + 1;
+
+    if (IS_PREVIEW) {
+      state.faqList.push({ id: 'faq-' + Date.now(), pertanyaan, jawaban, urutan });
+      renderActiveDashboardTab();
+      showToast('FAQ berhasil ditambahkan!');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('faq_rekrutmen')
+        .insert([{ pertanyaan, jawaban, urutan }])
+        .select()
+        .single();
+      if (error) throw error;
+      state.faqList.push(data);
+      renderActiveDashboardTab();
+      showToast('FAQ berhasil disimpan ke Supabase!');
+    } catch (err) {
+      showToast('Gagal menyimpan FAQ: ' + err.message, 'error');
+    }
+  }
+
+  async function deleteFaq(id) {
+    if (IS_PREVIEW) {
+      state.faqList = state.faqList.filter(f => f.id !== id);
+      renderActiveDashboardTab();
+      showToast('FAQ dihapus.');
+      return;
+    }
+    try {
+      const { error } = await supabase.from('faq_rekrutmen').delete().eq('id', id);
+      if (error) throw error;
+      state.faqList = state.faqList.filter(f => f.id !== id);
+      renderActiveDashboardTab();
+      showToast('FAQ dihapus dari database.');
+    } catch (err) {
+      showToast('Gagal menghapus FAQ: ' + err.message, 'error');
+    }
+  }
+
+  // Toggle FAQ Accordion di Landing Page
+  function toggleFaq(idx) {
+    const ans = document.getElementById(`faq-ans-${idx}`);
+    const icon = document.getElementById(`faq-icon-${idx}`);
+    if (!ans) return;
+    const isHidden = ans.classList.contains('hidden');
+    if (isHidden) {
+      ans.classList.remove('hidden');
+      icon.textContent = '−';
+    } else {
+      ans.classList.add('hidden');
+      icon.textContent = '+';
+    }
+  }
+
+  function scrollToTop() {
+    document.getElementById('kspps-app-root').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Ekspos fungsi ke object window.app agar dapat dipanggil dari atribut onclick HTML
+  window.app = {
+    openAuthModal,
+    closeAuthModal,
+    switchAuthTab,
+    handleLoginPelamar,
+    handleRegisterPelamar,
+    handleLoginAdmin,
+    quickLoginPelamar,
+    quickLoginAdmin,
+    logout,
+    enterDashboard,
+    showLandingPage,
+    switchDashboardTab,
+    savePelamarBiodata,
+    handleFileSelect,
+    handleBerkasText,
+    saveAllBerkasPelamar,
+    submitJobApplication,
+    applyFromLanding,
+    handleSaveLowongan,
+    toggleStatusLowongan,
+    deleteLowongan,
+    inspectApplicant,
+    closeApplicantModal,
+    previewSingleBerkas,
+    closeFileViewer,
+    updateLamaranStatus,
+    handleSaveFaq,
+    deleteFaq,
+    toggleFaq,
+    scrollToTop
+  };
+
+  // Inisialisasi saat halaman selesai dimuat
+  window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
+    initTransparentLogo();
+    loadInitialData();
+  });
+</script>
+</body>
+</html>
